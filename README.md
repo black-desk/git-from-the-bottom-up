@@ -110,7 +110,7 @@
 
 > The usual flow of events is this: After creating a repository, your work is done in the working tree. Once your work reaches a significant point — the completion of a bug, the end of the working day, a moment when everything compiles — you add your changes successively to the index. Once the index contains everything you intend to commit, you record its content in the repository. Here’s a simple diagram that shows a typical project’s life-cycle:
 
-通常来说, 你用 Git 工作的流程是这样的: 在创建一个 repository 之后, 你在 working tree 中完成工作. 每当你完成了一个阶段的工作, 比方说修正了一个 bug, 或者下班了, 还有比如"终于能过编译了!",你就把所有的更改都添加到 the index 中. 当 the index 中包含了所有你想 commit 的内容, 你就将这个 commit 的内容加入到 repository 中.这里有一个简单的示意图,展示了一个项目通常的生命周期:
+通常来说, 你用 Git 工作的流程是这样的: 在创建一个 repository 之后, 你在 working tree 中完成工作. 每当你完成了一个阶段的工作, 比方说修正了一个 bug, 或者下班了, 还有比如"终于能过编译了!",你就把所有的更改都一个一个添加到 the index 中. 当 the index 中包含了所有你想 commit 的内容, 你就将这个 commit 的内容加入到 repository 中.这里有一个简单的示意图,展示了一个项目通常的生命周期:
 
 
 
@@ -188,7 +188,7 @@ Git 中的 blob 和文件系统中的文件的一大区别就是 blob 中并没�
 
 
 
-## Introducing the blob | 简单介绍一下 blob
+## Introducing the blob | 关于 blob 的二三事
 
 
 
@@ -379,7 +379,7 @@ blob
 
 
 
-## How trees are made | tree 是怎样炼成的
+## How trees are made | Tree 是怎样炼成的
 
 
 
@@ -493,11 +493,11 @@ Date:   Mon Apr 14 11:14:58 2008 -0400
 
 
 
-# The beauty of commits | commit 之美
+# The beauty of commits | Commit 之美
 
 
 
->  Some version control systems make “branches” into magical things, often distinguishing them from the “main line” or “trunk”, while others discuss the concept as though it were very different from commits. But in Git there are no branches as separate entities: there are only blobs, trees and commits. Since a commit can have one or more parents, and those commits can have parents, this is what allows a single commit to be treated like a branch: because it knows the whole history that led up to it.
+>  Some version control systems make “branchCes” into magical things, often distinguishing them from the “main line” or “trunk”, while others discuss the concept as though it were very different from commits. But in Git there are no branches as separate entities: there are only blobs, trees and commits. Since a commit can have one or more parents, and those commits can have parents, this is what allows a single commit to be treated like a branch: because it knows the whole history that led up to it.
 
 一些版本控制系统将 branch 弄得很晦涩难懂, 经常将 "主线" (或者说 "主干" ), 和 "分支" 区分开来, 而另一些版本控制系统则认为分支这个概念和 commit 有很大区别. 但是在 Git 中并没有 branch 这个实体: Git 里只有 blob, tree 以及 commit 这三个概念. 因为一个 commit 可以有多个父 commit 而这些父 commit 也有父亲, 所以我们实际上可以把单个 commit 当作 branch 来看待: 因为我们实际上可以从这个 commit 开始, 回溯出文件内容是如何一步步地被修改, 更迭到当前这个 commit 的这整个历史.
 
@@ -550,7 +550,7 @@ $ git checkout 5f1bc85
 
 > Another joy of the commit-based system is that you can rephrase even the most complicated version control terminology using a single vocabulary. For example, if a commit has multiple parents, it’s a “merge commit” — since it merged multiple commits into one. Or, if a commit has multiple children, it represents the ancestor of a “branch”, etc. But really there is no difference between these things to Git: to it, the world is simply a collection of commit objects, each of which holds a tree that references other trees and blobs, which store your data. Anything more complicated than this is simply a device of nomenclature.
 
-另一个使用基于 commit 的版本控制系统带来的乐趣是你可以用很简单的话语来描述版本控制系统中那些晦涩难懂的术语. 比方说, 如果一个 commit 拥有两个父 commit, 那么我们称这个 commit 是一个 "merge commit" — 因为它确实将多个 commit 合并了起来嘛.还有,如果一个 commit 拥有多个子 commit 这代表着这里是分支的开始, 诸如此类. 但是实际上这些术语所描述的事情对于 Git 来说并没有什么区别: 对于 Git 来说, 整个世界就是由 commit 对象组成的, 它们管理着一个 tree 而这个 tree 中又引用了 其他的 tree 以及 blob, 在 blob 中实际存放着你的数据. 比这个复杂的东西都只是其他人对某个行为取的名字罢了.
+另一个使用基于 commit 的版本控制系统带来的乐趣是你可以用很简单的话语来描述版本控制系统中那些晦涩难懂的术语. 比方说, 如果一个 commit 拥有两个父 commit, 那么我们称这个 commit 是一个 "merge commit" — 因为它确实将多个 commit 合并了起来嘛.还有,如果一个 commit 拥有多个子 commit 这代表着这里是分支的开始, 诸如此类. 但是实际上这些术语所描述的事情对于 Git 来说并没有什么区别: 对于 Git 来说, 整个世界就是由 commit 对象组成的, 它们管理着一个 tree 而这个 tree 中又引用了 其他的 tree 以及 blob, 在 blob 中实际存放着你的数据. 其他比这个复杂的东西都只是其他人对某个行为取的名字罢了.
 
 > Here is a picture of how all these pieces fit together:
 
@@ -564,5 +564,89 @@ $ git checkout 5f1bc85
 
 
 
+# A commit by any other name... | Commit 的名字
 
 
+
+> Understanding commits is the key to grokking Git. You’ll know you have reached the Zen plateau of branching wisdom when your mind contains only commit topologies, leaving behind the confusion of branches, tags, local and remote repositories, etc. Hopefully such understanding will not require lopping off your arm — although I can appreciate if you’ve considered it by now.
+
+对 commit 的理解对于弄懂 Git 来说非常关键. 当你抛弃了那些令人困惑的什么 branch, tag, 本地的以及远程 repository 之后, 当你的头脑中只剩下了 commit 相关的拓扑结构的时候, 你将会对 "分支" 的智慧有崭新的理解. 想过去这种对 commit 的理解对于你来不会是什么很困难的事情, 如果你现在就能开始试图理解 commit 我会很开心.
+
+
+
+> If commits are the key, how you name commits is the doorway to mastery. There are many, many ways to name commits, ranges of commits, and even some of the objects held by commits, which are accepted by most of the Git commands. Here’s a summary of some of the more basic usages:
+
+如果说 commit 是关键, 那么如何给 commit 命名就是理解 Git 的门道所在. 实际上有很多很多给 commit 命名的方式, 甚至连一次性给某个范围内的 commit 命名, 乃至于给一些由 commit 管理的对象命名, 都是可以办到的. 大部分的 Git 命令都支持这种操作. 这里有一些你需要知道的用法总结:
+
+
+
+> * **branchname** — As has been said before, the name of any branch is simply an alias for the most recent commit on that “branch”. This is the same as using the word HEAD whenever that branch is checked out.
+
+* **branchname** — 就像之前说的那样, branch 的名字只是那个 "分支" 上最新的一个 commit 的别名. 这和你使用单词 HEAD 来表示当前 check out 的那个 branch 是一样的. 
+
+
+
+> * **tagname** — A tag-name alias is identical to a branch alias in terms of naming a commit. The major difference between the two is that tag aliases never change, whereas branch aliases change each time a new commit is checked in to that branch.
+
+* **tagname** — 从给commit命名的角度来看, 一个 tag 几乎和一个 branch 是一模一样的. 主要的区别在于 branch 指代的 commit 是可能会变化的, 它会在新的 commit 提交到这个 branch 的时候被更新成新的那个, 而 tag 不会.
+
+
+
+>* **HEAD** — The currently checked out commit is always called HEAD. If you check out a specific commit — instead of a branch name — then HEAD refers to that commit only and not to any branch. Note that this case is somewhat special, and is called “using a detached HEAD” (I’m sure there’s a joke to be told here...).
+
+* **HEAD** — 当前 check out 的那个 commit 被称作 HEAD. 如果你 check out 了一个特定的 commit — 而不是一个 branch 的话 — 那么 HEAD 就只是指向了那个 commit 而已, 并没有指向任何一个 branch. 需要注意的是这是一种特殊的情况, 我们称这种情况为 HEAD 指针的脱离.
+
+
+
+> * **c82a22c39cbc32...** — A commit may always be referenced using its full, 40-character SHA1 hash id. Usually this happens during cut-and-pasting, since there are typically other, more convenient ways to refer to the same commit.
+> * **c82a22c** — You only need use as many digits of a hash id as are needed for a unique reference within the repository. Most of the time, six or seven digits is enough.
+
+* **c82a22c39cbc32...** — 我们总是可以通过一个 commit 的那个由四十个字符组成的 SHA1 哈希值来找到它. 通常这种事情发生在你需要复制粘贴的时候, 因为在其他情况下, 几乎都有更方便的方式来找到它.
+* **c82a22c** — 其实你只需要给出足够在当前的 repository 中唯一确定一个 commit 的哈希值的前缀就足以找到那个 commit 了, 一般来说是 6 到 7 位左右.
+
+
+
+> * **name^** — The parent of any commit is referenced using the caret symbol. If a commit has more than one parent, the first is used.
+> * **name^^** — Carets may be applied successively. This alias refers to “the parent of the parent” of the given commit name.
+> * **name^2** — If a commit has multiple parents (such as a merge commit), you can refer to the _nth_ parent using `name^n`.
+> * **name~10** — A commit’s _nth_ generation ancestor may be referenced using a tilde (~) followed by the ordinal number. This type of usage is common with `rebase -i`, for example, to mean “show me a bunch of recent commits”. This is the same as name^^^^^^^^^^.
+> * **name:path** — To reference a certain file within a commit’s content tree, specify that file’s name after a colon. This is helpful with show, or to show the difference between two versions of a committed file:
+
+接下来的几条中的 "name" 可以使用上文提到的所有可以找到 commit 的字符串替换, 以下是一些相对某个 commit 查询另一个 commit 的方法:
+
+* **name^** —  `^` 这个符号可以找到一个 commit 的父 commit,  如果这个 commit 有多个父 commit 那么查询的结果是第一个.[^8]
+* **name^^** — `^` 这个符号是可以被连续的调用[^9]的 , 这意味着你寻找的是当前 commit 的爷爷.
+* **name^2** — 如果一个 commit 有多个父 commit — 比方说一个 merge commit — 那么如果你想找其中的第 n 个父 commit, 可以使用 `name^n`.
+* **name~10** — 这意味着一个 commit 十代之前的那个祖宗, 第 n 代祖先,可以通过一个 `~` 符号后面跟着一个数字来找到. 这一般是用于执行 `rebase -i` 命令的时候用的. 效果和 name^^^^^^^^^^ 是完全一致的.
+* **name:path** — 你可以用这种方式来从一个 commit 中根据路径来找到 tree 中的某个特定文件. 一般来说这个功能在你想比较两个 commit 之间某个文件的差异的时候比较有用, 比如像下面这样:
+
+
+
+```bash
+  $ git diff HEAD^1:Makefile HEAD^2:Makefile
+```
+
+
+
+* **name^{tree}** — You can reference just the tree held by a commit, rather than the commit itself.
+* **name1..name2** — This and the following aliases indicate _commit ranges_, which are supremely useful with commands like log for seeing what’s happened during a particular span of time. The syntax to the left refers to all the commits reachable from **name2** back to, but not including, **name1**. If either **name1** or **name2** is omitted, HEAD is used in its place.
+* **name1...name2** — A “triple-dot” range is quite different from the two-dot version above. For commands like log, it refers to all the commits referenced by **name1** or **name2**, but not by both. The result is then a list of all the unique commits in both branches. For commands like `diff`, the range expressed is between **name2** and the common ancestor of **name1** and **name2**. This differs from the `log` case in that changes introduced by **name1** are not shown.
+* **master..** — This usage is equivalent to “`master..HEAD`”. I’m adding it here, even though it’s been implied above, because I use this kind of alias constantly when reviewing changes made to the current branch.
+* **..master** — This, too, is especially useful after you’ve done a `fetch` and you want to see what changes have occurred since your last `rebase` or `merge`.
+* **--since="2 weeks ago"** — Refers to all commits since a certain date.
+* **--until=”1 week ago”** — Refers to all commits before a certain date.
+* **--grep=pattern** — Refers to all commits whose commit message matches the regular expression pattern.
+* **--committer=pattern** — Refers to all commits whose committer matches the pattern.
+* **--author=pattern** — Refers to all commits whose author matches the pattern. The author of a commit is the one who created the changes it represents. For local development this is always the same as the committer, but when patches are being sent by e-mail, the author and the committer usually differ.
+* **--no-merges** — Refers to all commits in the range that have only one parent — that is, it ignores all merge commits.
+
+Most of these options can be mixed-and-matched. Here is an example which shows the following log entries: changes made to the current branch (branched from master), by myself, within the last month, which contain the text “foo”:
+
+```bash
+$ git log --grep='foo' --author='johnw' --since="1 month ago" master..
+```
+
+
+
+[^8]: 这里的 "first" 是按提交 commit 的时间排序的么?
+[^9]: 毕竟你可以将 "name^" 看作是一个 "name" 嘛
