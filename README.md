@@ -491,3 +491,78 @@ Date:   Mon Apr 14 11:14:58 2008 -0400
 
 
 
+
+
+# The beauty of commits | commit 之美
+
+
+
+>  Some version control systems make “branches” into magical things, often distinguishing them from the “main line” or “trunk”, while others discuss the concept as though it were very different from commits. But in Git there are no branches as separate entities: there are only blobs, trees and commits. Since a commit can have one or more parents, and those commits can have parents, this is what allows a single commit to be treated like a branch: because it knows the whole history that led up to it.
+
+一些版本控制系统将 branch 弄得很晦涩难懂, 经常将 "主线" (或者说 "主干" ), 和 "分支" 区分开来, 而另一些版本控制系统则认为分支这个概念和 commit 有很大区别. 但是在 Git 中并没有 branch 这个实体: Git 里只有 blob, tree 以及 commit 这三个概念. 因为一个 commit 可以有多个父 commit 而这些父 commit 也有父亲, 所以我们实际上可以把单个 commit 当作 branch 来看待: 因为我们实际上可以从这个 commit 开始, 回溯出文件内容是如何一步步地被修改, 更迭到当前这个 commit 的这整个历史.
+
+> You can examine all the top-level, referenced commits at any time using the `branch` command:
+
+你随时都可以通过 `branch` 命令查看所有顶层的, 被引用的 commit :
+
+
+
+```bash
+$ git branch -v
+* master 5f1bc85 Initial commit
+```
+
+
+
+> Say it with me: A branch is nothing more than a named reference to a commit. In this way, branches and tags are identical, with the sole exception that tags can have their own descriptions, just like the commits they reference. Branches are just names, but tags are descriptive, well, “tags”.
+
+来跟着我一起念: "一个 branch 仅仅只是一个 commit 的引用, 只是这个引用本身还有一个名字罢了." 从这种角度来看, branch 和 tags 几乎没有什么区别,  只有一个例外: tag 就像它指向的那个 commit 一样还可以拥有自己的说明性文字. branch 只是 commit 的名字, 但是 tag 是描述性的, 毕竟人家是 "标签" 嘛.
+
+> But the fact is, we don’t really need to use aliases at all. For example, if I wanted to, I could reference everything in the repository using only the hash ids of its commits. Here’s me being straight up loco and resetting the head of my working tree to a particular commit:
+
+但是实际上我们也可以完全就不用这些别名. 比如说, 如果我想的话, 我实际上可以用 repository 中任何一个 commit 的哈希值来唯一地确定它. 下面这个是如果我想直接把我的 working tree 对应的 HEAD 指向某个特定的 commit 需要用的命令:
+
+
+
+```bash
+$ git reset --hard 5f1bc85
+```
+
+
+
+> The --hard option says to erase all changes currently in my working tree, whether they’ve been registered for a checkin or not (more will be said about this command later). A safer way to do the same thing is by using `checkout`:
+
+这个 `--hard` 选项的意思就是说, 让 Git 不管我当前的 working tree 中相对于给定的 commit 发生的所有更改是否有被记录下来过, 都把它们清除掉. 我们以后还会聊聊 `reset` 这个命令. 完成这件事情还有一个更安全的方式, 那就是使用 checkout 命令:
+
+
+
+```bash
+$ git checkout 5f1bc85
+```
+
+
+
+> The difference here is that changed files in my working tree are preserved. If I pass the `-f` option to `checkout`, it acts the same in this case to `reset --hard`, except that checkout only ever changes the working tree, whereas `reset --hard` changes the current branch's HEAD to reference the specified version of the tree.
+
+这两者的区别在于, 后者对于我的 working tree 中的文件修改操作是有一定保护的, 对于没记录过的数据会做一次是否清除的询问.  如果我们将参数 `-f` 传递给 `checkout`命令, Git 的行为就会几乎和执行 `reset --hard` 时一模一样. 它们两之间的区别在于 `checkout` 命令只是清除 working tree 中的文件变化, 而 `reset --hard` 会将当前的 HEAD 指向的那个 branch 一起移动到某个版本的 tree 上.
+
+
+
+> Another joy of the commit-based system is that you can rephrase even the most complicated version control terminology using a single vocabulary. For example, if a commit has multiple parents, it’s a “merge commit” — since it merged multiple commits into one. Or, if a commit has multiple children, it represents the ancestor of a “branch”, etc. But really there is no difference between these things to Git: to it, the world is simply a collection of commit objects, each of which holds a tree that references other trees and blobs, which store your data. Anything more complicated than this is simply a device of nomenclature.
+
+另一个使用基于 commit 的版本控制系统带来的乐趣是你可以用很简单的话语来描述版本控制系统中那些晦涩难懂的术语. 比方说, 如果一个 commit 拥有两个父 commit, 那么我们称这个 commit 是一个 "merge commit" — 因为它确实将多个 commit 合并了起来嘛.还有,如果一个 commit 拥有多个子 commit 这代表着这里是分支的开始, 诸如此类. 但是实际上这些术语所描述的事情对于 Git 来说并没有什么区别: 对于 Git 来说, 整个世界就是由 commit 对象组成的, 它们管理着一个 tree 而这个 tree 中又引用了 其他的 tree 以及 blob, 在 blob 中实际存放着你的数据. 比这个复杂的东西都只是其他人对某个行为取的名字罢了.
+
+> Here is a picture of how all these pieces fit together:
+
+这里有一张关于上面提到的种种对象之间的关系的图,也许可以帮助你的理解:
+
+
+
+![Commits](https://jwiegley.github.io/git-from-the-bottom-up/images/commits.png)
+
+
+
+
+
+
+
