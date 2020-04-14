@@ -62,6 +62,8 @@
 
 * **commit** — **commit** 是某个时间点上你的 working tree 的一个快照[^1]. 当你提交一个 commit 的时候, HEAD 指向的 commit 会成为你提交的 commit 的父 commit. 这个机制让我们得以追溯修改的历史.
 
+[ 译者注: 这个描述貌似和上面对 working tree 的描述有冲突, 上面对 working tree 的说法是 working tree 包含了 `.git` 子目录,但是出于译者对 commit 的认识而言, commit 中应该没有 `.git` 中的相关信息. 这里可以尝试理解为文中说的 working tree 是类似工作区的概念, 并不包括 `.git` 子目录 ]
+
 
 
 ### branch
@@ -70,7 +72,9 @@
 
 > * **branch** — A **branch** is just a name for a commit (and much more will be said about commits in a moment), also called a reference. It’s the parentage of a commit which defines its history, and thus the typical notion of a “branch of development”.
 
-* **branch** — **branch** 只是某个的 commit 的别名[^2], 也可以认为是一个引用. 它是一个 commit 的来历, 记录着我们是如何到达这个 commit 的. 这很好地体现了分支开发的理念.
+* **branch** — **branch** 只是某个的 commit 的别名, 也可以认为是一个引用. 它是一个 commit 的来历, 记录着我们是如何到达这个 commit 的. 这很好地体现了分支开发的理念.
+
+[ 译者注: 这个地方括号中的内容不知道怎么翻译, 可以理解为, "我们还有很多关于 commit 的东西马上就要谈到", 但是感觉和上下文不搭. ]
 
 
 
@@ -103,7 +107,8 @@
     *  If you checkout a specific commit, HEAD refers to that commit only. This is referred to as a detached _HEAD_, and occurs, for example, if you check out a tag name.
 
 * **HEAD** — **HEAD** 是被你的 repository 用来确定什么东西是当前 checkout 的:
-  * 如果你 checkout 一个 branch, HEAD 会象征性地[^3]指向那个 branch, 这意味着这个 branch 在下一次 commit 之后会更新.  
+  * 如果你 checkout 一个 branch, HEAD 就会指向那个 branch, 这意味着这个 branch 在下一次 commit 之后会更新.  
+  
   * 如果你 checkout 某个特定的 commit, 那么 HEAD 只会指向那个 commit. 发生这种事情的时候, 我们称一个 HEAD 处在脱离的状态. 当你 checkout 一个 tag 的时候也会发生这样的事情.
 
 
@@ -121,14 +126,6 @@
 > With this basic picture in mind, the following sections shall attempt to describe how each of these different entities is important to the operation of Git.
 
 请将上述的内容记在心里, 接下来的几节我们将说明这些东西对 Git 的操作的重要性.
-
-
-
-[^1]: 这个描述貌似和上面对 working tree 的描述有冲突, 上面对 working tree 的说法是 working tree 包含了 `.git` 子目录,但是出于译者对 commit 的认识而言, commit 中应该没有 `.git` 中的相关信息. 这里可以尝试理解为文中说的 working tree 是类似工作区的概念, 并不包括 `.git` 子目录
-
-[^2]: 这个地方括号中的内容不知道怎么翻译, 可以理解为, "我们还有很多关于 commit 的东西马上就要谈到", 但是感觉和上下文不搭.
-
-[^3]: 存疑
 
 
 
@@ -178,11 +175,9 @@ Git 中的 blob 和文件系统中的文件的一大区别就是 blob 中并没�
 
 > In a normal filesystem, two files with the same contents but with such different metadata would always be represented as two independent files. Why this difference? Mainly, it’s because a filesystem is designed to support files that change, whereas Git is not. The fact that data is immutable in the Git repository is what makes all of this work and so a different design was needed. And as it turns out, this design allows for much more compact storage, since all objects having identical content can be shared, no matter where they are.
 
-通常来说, 在文件系统中, 两个内容一样却有不一样的元数据的文件总是会被当作是两个独立的文件. 为什么会有这种不同呢? 基本上我们可以认为这是因为文件系统主要是为了会变化的文件设计的, 而 Git 并不是, 我们反而是希望在 Git 中被存下来的快照不会发生变化的. 实际上这种设计甚至可以用来压缩存储空间, 因为它允许两个有相同内容的文件共享空间[^4].
+通常来说, 在文件系统中, 两个内容一样却有不一样的元数据的文件总是会被当作是两个独立的文件. 为什么会有这种不同呢? 基本上我们可以认为这是因为文件系统主要是为了会变化的文件设计的, 而 Git 并不是, 我们反而是希望在 Git 中被存下来的快照不会发生变化的. 实际上这种设计甚至可以用来压缩存储空间, 因为它允许两个有相同内容的文件共享空间.
 
-
-
-[^4]: 有理由相信 github 可以用这个方式来省钱, 这样 fork 出来的 repository 就不会那么占空间了.
+[ 译者注: 有理由相信 github 可以用这个方式来省钱, 这样 fork 出来的 repository 就不会那么占空间了. ]
 
 
 
@@ -220,7 +215,9 @@ af5626b4a114abcb82d63db7c8082c3c4756e51b
 
 > If you run this command on your system, you’ll get the same hash id. Even though we’re creating two different repositories (possibly a world apart, even) our greeting blob in those two repositories will have the same hash id. I could even pull commits from your repository into mine, and Git would realize that we’re tracking the same content — and so would only store one copy of it! Pretty cool.
 
-如果你也在你的机子上跑了这条命令,你一定会和我得到一个同样的哈希值. 虽然我们甚至可能不在同一个位面 :smirk:[^5], 在两个不同的 repository 中, 同样的内容还是有同样的哈希值. 我甚至可以从你的 repository 中 pull 一些 commit 到我这里来, 如果我真的那么做了, Git 也会认识到我们两个人是在跟踪同样的一个内容 — 所以它也只会存储一份数据. 这真的很棒!
+如果你也在你的机子上跑了这条命令,你一定会和我得到一个同样的哈希值. 虽然我们甚至可能不在同一个位面 :smirk:, 在两个不同的 repository 中, 同样的内容还是有同样的哈希值. 我甚至可以从你的 repository 中 pull 一些 commit 到我这里来, 如果我真的那么做了, Git 也会认识到我们两个人是在跟踪同样的一个内容 — 所以它也只会存储一份数据. 这真的很棒!
+
+[ 译者注: 这个地方我皮了一下, 但是实际上我并不确定原文是不是这个意思 ]
 
 
 
@@ -263,10 +260,6 @@ Git 以这种方式在 repository 中呈现数据. 讲真, 整个 Git 都只是�
 
 
 
-[^5]:  这个地方我皮了一下, 但是实际上我并不确定原文是不是这个意思
-
-
-
 
 
 # Blobs are stored in trees | Blob 是存在 tree 里的
@@ -298,7 +291,9 @@ $ git ls-tree HEAD
 
 > Although I can look at the tree containing my blob by passing HEAD to `ls-tree`, I haven’t yet seen the underlying tree object referenced by that commit. Here are a few other commands to highlight that difference and thus discover my tree:
 
-尽管我可以通过向 `ls-tree` 这个命令传入 HEAD 来查看那个含有我的 blob 的 tree, 但是我还没从底层看到过那个被 commit 引用的 tree 对象. 这里有几个命令能说明这两者有什么不同, 我们来看看:[^6]
+尽管我可以通过向 `ls-tree` 这个命令传入 HEAD 来查看那个含有我的 blob 的 tree, 但是我还没从底层看到过那个被 commit 引用的 tree 对象. 这里有几个命令能说明这两者有什么不同, 我们来看看:
+
+[ 译者注: 最后这句话的翻译不确定是否正确 ]
 
 
 
@@ -373,10 +368,6 @@ blob
 
 
 
-[^6]:存疑
-
-
-
 
 
 ## How trees are made | Tree 是怎样炼成的
@@ -391,6 +382,8 @@ blob
 
 我们来看上一节中提到的那个例子, 不过这次我们一步一步手动地做这些事情, 这样你可以明白底层到底发生了什么:
 
+
+
 ```bash
 $ rm -fr greeting .git
 $ echo 'Hello, world!' > greeting
@@ -398,9 +391,13 @@ $ git init
 $ git add greeting
 ```
 
+
+
 > It all starts when you first add a file to the index. For now, let’s just say that the index is what you use to initially create blobs out of files. When I added the file `greeting`, a change occurred in my repository. I can’t see this change as a commit yet, but here is one way I can tell what happened:
 
 这一切是从你首次将一个文件加入 the index 开始的. 现在让我们先这么认为: the index 是你初次用来将文件内容装填进 blob 时所需要使用的工具.当我添加名为 `greeting` 的文件时, 我的 repository 发生了一次修改, 而我目前还不能够将这个更改看作是 commit, 但是我还是有一个方法能够搞清到底发生了什么:
+
+
 
 ```bash
 $ git log # this will fail, there are no commits!
@@ -408,6 +405,8 @@ fatal: bad default revision 'HEAD'
 $ git ls-files --stage # list blob referenced by the index
 100644 af5626b4a114abcb82d63db7c8082c3c4756e51b 0 greeting
 ```
+
+
 
 > What’s this? I haven’t committed anything to the repository yet, but already an object has come into being. It has the same hash id I started this whole business with, so I know it represents the contents of my `greeting` file. I could use `cat-file -t` at this point on the hash id, and I’d see that it was a blob. It is, in fact, the same blob I got the first time I created this sample repository. The same file will always result in the same blob (just in case I haven’t stressed that enough).
 
@@ -417,10 +416,14 @@ $ git ls-files --stage # list blob referenced by the index
 
 这个 blob 目前还没有被某个 tree 引用, 实际上也没有被任何一个 commit 引用. 在这个时候, 实际上只有一个叫 `.git/index`的文件引用了这个 blob, 这文件里面引用了所有构成了当前的 index 的 blob 和 tree. 那么我们现在用这个 blob 来创建一个 tree:
 
+
+
 ```bash
 $ git write-tree # record the contents of the index in a tree
 0563f77d884e4f79ce95117e2d686d7d6e282887
 ```
+
+
 
 > This number should look familiar as well: a tree containing the same blobs (and sub-trees) will always have the same hash id. I don’t have a commit object yet, but now there is a tree object in that repository which holds the blob. The purpose of the low-level `write-tree` command is to take whatever the contents of the index are and tuck them into a new tree for the purpose of creating a commit.
 
@@ -430,10 +433,14 @@ $ git write-tree # record the contents of the index in a tree
 
 只需要用 `commit-tree` 命令, 我现在就可以用上面创建的 tree 来手动地创建一个新的 commit 对象, 就像这样:
 
+
+
 ```bash
 $ echo "Initial commit" | git commit-tree 0563f77
 5f1bc85745dcccce6121494fdd37658cb4ad441f
 ```
+
+
 
 > The raw `commit-tree` command takes a tree’s hash id and makes a commit object to hold it. If I had wanted the commit to have a parent, I would have had to specify the parent commit’s hash id explicitly using the `-p` option. Also, note here that the hash id differs from what will appear on your system: This is because my commit object refers to both my name, and the date at which I created the commit, and these two details will always be different from yours.
 
@@ -443,25 +450,39 @@ $ echo "Initial commit" | git commit-tree 0563f77
 
 活还没完, 我们还没更新这个 commit 对应的分支:
 
+
+
 ```bash
 $ echo 5f1bc85745dcccce6121494fdd37658cb4ad441f > .git/refs/heads/master
 ```
+
+
 
 > This command tells Git that the branch name “master” should now refer to our recent commit. Another, much safer way to do this is by using the command `update-ref`:
 
 这个命令告诉 Git 该用 "master" 这个名字指代我们新提交的那个 commit 了. 还有一点要说的就是, 完成上面这件事情还有一个更安全的方法, 那就是使用 `update-ref` 命令:
 
+
+
 ```bash
 $ git update-ref refs/heads/master 5f1bc857
 ```
 
+
+
 > After creating `master`, we must associate our working tree with it. Normally this happens for you whenever you check out a branch:
 
-在创建[^7]完 master 之后,我们必须将我们的 working tree 调整成和 master 相匹配的样子. 一般来说, 这个操作是用于 check out 一个分支的:
+在创建完 master 之后,我们必须将我们的 working tree 调整成和 master 相匹配的样子. 一般来说, 这个操作是用于 check out 一个分支的:
+
+[译者注: 这个时候真的还没有 "master" 这个分支么? 为什么可以说是 create 呢? ]
+
+
 
 ```bash
 $ git symbolic-ref HEAD refs/heads/master
 ```
+
+
 
 > This command associates HEAD symbolically with the master branch. This is significant because any future commits from the working tree will now automatically update the value of `refs/heads/master`.
 
@@ -473,6 +494,8 @@ $ git symbolic-ref HEAD refs/heads/master
 
 虽然很难相信, 但是 Git 的工作就是如此简单, 我还可以使用 log 命令来查看我刚一步步手动添加的这个 commit:
 
+
+
 ```bash
 $ git log
 commit 5f1bc85745dcccce6121494fdd37658cb4ad441f
@@ -481,13 +504,11 @@ Date:   Mon Apr 14 11:14:58 2008 -0400
         Initial commit
 ```
 
+
+
 > A side note: if I hadn’t set `refs/heads/master` to point to the new commit, it would have been considered “unreachable”, since nothing currently refers to it nor is it the parent of a reachable commit. When this is the case, the commit object will at some point be removed from the repository, along with its tree and all its blobs. (This happens automatically by a command called `gc`, which you rarely need to use manually). By linking the commit to a name within `refs/heads`, as we did above, it becomes a reachable commit, which ensures that it’s kept around from now on.
 
 这里有个值得注意的地方: 如果我不曾将文件 `refs/heads/master` 指向那个新的 commit, 这个 commit 会被看作是 "不可达的", 因为没有任何其他的东西和他有关联, 它也不是任何一个可达的 commit 的祖先. 当发生这种情况的时候, 这个 commit 将会被 Git 在某个时候从 repository 中移除, 它对应的 tree 和 blob 也一样, (这个事情会在运行一个叫 `gc` 的命令的时候自动地发生, 当然这个命令基本不会被用户手动运行). 如果我们像上面做的那样, 在目录 `.git/heads` 下用某个名字关联到这个 commit, 这个 commit 就是可达的了, 这可以保证它不会被删掉.
-
-
-
-[^7]: 这个时候真的还没有 "master" 这个分支么? 为什么可以说是 create 呢?
 
 
 
@@ -614,8 +635,14 @@ $ git checkout 5f1bc85
 
 接下来的几条中的 "name" 可以使用上文提到的所有可以找到 commit 的字符串替换, 以下是一些相对某个 commit 查询另一个 commit 的方法:
 
-* **name^** —  `^` 这个符号可以找到一个 commit 的父 commit,  如果这个 commit 有多个父 commit 那么查询的结果是第一个.[^8]
-* **name^^** — `^` 这个符号是可以被连续的调用[^9]的 , 这意味着你寻找的是当前 commit 的爷爷.
+* **name^** —  `^` 这个符号可以找到一个 commit 的父 commit,  如果这个 commit 有多个父 commit 那么查询的结果是第一个.
+
+[ 译者注: 这里的 "first" 是按提交 commit 的时间排序的么? ]
+
+* **name^^** — `^` 这个符号是可以被连续的调用的 , 这意味着你寻找的是当前 commit 的爷爷.
+
+[ 译者注: 毕竟你可以将 "name^" 看作是一个 "name" 嘛 ]
+
 * **name^2** — 如果一个 commit 有多个父 commit — 比方说一个 merge commit — 那么如果你想找其中的第 n 个父 commit, 可以使用 `name^n`.
 * **name~10** — 这意味着一个 commit 十代之前的那个祖宗, 第 n 代祖先,可以通过一个 `~` 符号后面跟着一个数字来找到. 这一般是用于执行 `rebase -i` 命令的时候用的. 效果和 name^^^^^^^^^^ 是完全一致的.
 * **name:path** — 你可以用这种方式来从一个 commit 中根据路径来找到 tree 中的某个特定文件. 一般来说这个功能在你想比较两个 commit 之间某个文件的差异的时候比较有用, 比如像下面这样:
@@ -647,6 +674,3 @@ $ git log --grep='foo' --author='johnw' --since="1 month ago" master..
 ```
 
 
-
-[^8]: 这里的 "first" 是按提交 commit 的时间排序的么?
-[^9]: 毕竟你可以将 "name^" 看作是一个 "name" 嘛
