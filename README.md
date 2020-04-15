@@ -655,22 +655,50 @@ $ git checkout 5f1bc85
 
 
 
-* **name^{tree}** — You can reference just the tree held by a commit, rather than the commit itself.
-* **name1..name2** — This and the following aliases indicate _commit ranges_, which are supremely useful with commands like log for seeing what’s happened during a particular span of time. The syntax to the left refers to all the commits reachable from **name2** back to, but not including, **name1**. If either **name1** or **name2** is omitted, HEAD is used in its place.
-* **name1...name2** — A “triple-dot” range is quite different from the two-dot version above. For commands like log, it refers to all the commits referenced by **name1** or **name2**, but not by both. The result is then a list of all the unique commits in both branches. For commands like `diff`, the range expressed is between **name2** and the common ancestor of **name1** and **name2**. This differs from the `log` case in that changes introduced by **name1** are not shown.
-* **master..** — This usage is equivalent to “`master..HEAD`”. I’m adding it here, even though it’s been implied above, because I use this kind of alias constantly when reviewing changes made to the current branch.
-* **..master** — This, too, is especially useful after you’ve done a `fetch` and you want to see what changes have occurred since your last `rebase` or `merge`.
-* **--since="2 weeks ago"** — Refers to all commits since a certain date.
-* **--until=”1 week ago”** — Refers to all commits before a certain date.
-* **--grep=pattern** — Refers to all commits whose commit message matches the regular expression pattern.
-* **--committer=pattern** — Refers to all commits whose committer matches the pattern.
-* **--author=pattern** — Refers to all commits whose author matches the pattern. The author of a commit is the one who created the changes it represents. For local development this is always the same as the committer, but when patches are being sent by e-mail, the author and the committer usually differ.
-* **--no-merges** — Refers to all commits in the range that have only one parent — that is, it ignores all merge commits.
+> * **name^{tree}** — You can reference just the tree held by a commit, rather than the commit itself.
 
-Most of these options can be mixed-and-matched. Here is an example which shows the following log entries: changes made to the current branch (branched from master), by myself, within the last month, which contain the text “foo”:
+* **name^{tree}** — 上面说的都是找到某个 commit 的方法, 而你可以通过这个方式来指定一个 commit 管理的那个 tree.
+
+
+
+>* **name1..name2** — This and the following aliases indicate _commit ranges_, which are supremely useful with commands like log for seeing what’s happened during a particular span of time. The syntax to the left refers to all the commits reachable from **name2** back to, but not including, **name1**. If either **name1** or **name2** is omitted, HEAD is used in its place.
+>* **name1...name2** — A “triple-dot” range is quite different from the two-dot version above. For commands like log, it refers to all the commits referenced by **name1** or **name2**, but not by both. The result is then a list of all the unique commits in both branches. For commands like `diff`, the range expressed is between **name2** and the common ancestor of **name1** and **name2**. This differs from the `log` case in that changes introduced by **name1** are not shown.
+>* **master..** — This usage is equivalent to “`master..HEAD`”. I’m adding it here, even though it’s been implied above, because I use this kind of alias constantly when reviewing changes made to the current branch.
+>* **..master** — This, too, is especially useful after you’ve done a `fetch` and you want to see what changes have occurred since your last `rebase` or `merge`.
+>* **--since="2 weeks ago"** — Refers to all commits since a certain date.
+>* **--until=”1 week ago”** — Refers to all commits before a certain date.
+>* **--grep=pattern** — Refers to all commits whose commit message matches the regular expression pattern.
+>* **--committer=pattern** — Refers to all commits whose committer matches the pattern.
+>* **--author=pattern** — Refers to all commits whose author matches the pattern. The author of a commit is the one who created the changes it represents. For local development this is always the same as the committer, but when patches are being sent by e-mail, the author and the committer usually differ.
+>* **--no-merges** — Refers to all commits in the range that have only one parent — that is, it ignores all merge commits.
+
+以下都是一个范围内的 commit 的别名, 通常来说, 在调用 log 命令来查看过去的某段时间内, 代码到底发生了什么变化的时候非常的有用:
+
+* **name1..name2** — 这意味着你选中了在树上遍历时, 从 name2 出发, 在遍历到 name1 之前所有可以遍历到的 commit, 当然是不包括 name1 的.如果你在 name1 或者 name2 的位置什么都没写, 那么意味着你希望在相应位置使用 HEAD 来代替 name1/name2.
+  * **master..** — 这样可以选中 master 到 HEAD 的所有 commit, 一般来说, 在查看 dev 比 master 快了多少的时候比较有用.
+  * **..master** — 这个通常用于: 在你完成了一次 fetch 之后, 想查看自己本地的 master 在上一次 rebase 或者是 merge 之后在远程仓库中被做了什么样的修改.
+* **name1...name2** — 中间有三个点的范围和上面说的只有两个点的有很大的差异. 对于 `log` 这类的命令, 三个点的范围选中了所有被 name1 或者 name2 其中之一直接或者间接引用的所有 commit, 注意: 并不包括两者同时引用的 commit. 结果上来说, 这意味着你找到了一系这两个分支并不共同拥有的 commit. 而对于像 `diff` 这样的指令而言, 这样会选中从 name2 到 name1 和 name2 的最近公共祖先之间的所有 commit. `differ` 和 `log` 的区别实际上在于, 从 LCA 到 name1 这条路径上的 commit 并不会被选中.
+
+* **--since="2 weeks ago"** — 这样可以选中某个特定日期之后的所有 commit.
+* **--until=”1 week ago”** — 与上一条类似, 选中某个特定日期之前的所有 commit.
+* **--grep=pattern** — 选中所有在 commit message 中有和 pattern 匹配的内容的 commit.
+* **--committer=pattern** — 选中所有提交者名字和 pattern 相匹配的 commit.
+* **--author=pattern** — 选中所有作者名字和 pattern 相匹配的 commit. 作者和提交者是有区别的, 作者是指实际上对目录中的内容做出更改的那个人, 而提交者是将这个更改加入到 repository 中的人. 对于本地仓库来说, 作者和提交者总是一样的, 但是比如说某些更改是通过邮件发送的, 那么作者和提交者往往是不同的.
+* **--no-merges** — 顾名思义, 是指选中所有只有一个父 commit 的 commit, 即将所有 merge commit 排除在外.
+
+
+
+> Most of these options can be mixed-and-matched. Here is an example which shows the following log entries: changes made to the current branch (branched from master), by myself, within the last month, which contain the text “foo”:
+
+这些选项通常都可以混合使用. 下面这个例子是我选中在当前分支 (这是一个比 master 更快的分支, 比如 dev 分支) 中由我在过去一个月内写的, 并且还在 commit message 中含有 "foo" 的所有 commit:
+
+
 
 ```bash
 $ git log --grep='foo' --author='johnw' --since="1 month ago" master..
 ```
+
+
+
 
 
