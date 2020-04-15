@@ -131,7 +131,13 @@
 
 
 
-## Repository: Directory content tracking | Repository: 目录内容跟踪
+## 1 Repository
+
+
+
+
+
+### 1.1 Repository: Directory content tracking | Repository: 目录内容跟踪
 
 
 
@@ -183,7 +189,7 @@ Git 中的 blob 和文件系统中的文件的一大区别就是 blob 中并没�
 
 
 
-## Introducing the blob | 关于 blob 的二三事
+### 1.2 Introducing the blob | 关于 blob 的二三事
 
 
 
@@ -262,7 +268,7 @@ Git 以这种方式在 repository 中呈现数据. 讲真, 整个 Git 都只是�
 
 
 
-# Blobs are stored in trees | Blob 是存在 tree 里的
+### 1.3 Blobs are stored in trees | Blob 是存在 tree 里的
 
 
 
@@ -370,7 +376,7 @@ blob
 
 
 
-## How trees are made | Tree 是怎样炼成的
+### 1.4 How trees are made | Tree 是怎样炼成的
 
 
 
@@ -514,7 +520,7 @@ Date:   Mon Apr 14 11:14:58 2008 -0400
 
 
 
-# The beauty of commits | Commit 之美
+### 1.5 The beauty of commits | Commit 之美
 
 
 
@@ -585,7 +591,7 @@ $ git checkout 5f1bc85
 
 
 
-# A commit by any other name... | Commit 的名字
+### 1.6 A commit by any other name... | Commit 的名字
 
 
 
@@ -697,6 +703,143 @@ $ git checkout 5f1bc85
 ```bash
 $ git log --grep='foo' --author='johnw' --since="1 month ago" master..
 ```
+
+
+
+
+
+### 1.7 Branching and the power of rebase | 分支, 以及 rebase 的力量
+
+
+
+> One of Git’s most capable commands for manipulating commits is the innocently-named rebase command. Basically, every branch you work from has one or more “base commits”: the commits that branch was born from. Take the following typical scenario, for example. Note that the arrows point back in time because each commit references its parent(s), but not its children. Therefore, the D and Z commits represent the heads of their respective branches:
+
+Git 最好用的命令之一就是操作 commit 的 rebase 命令, 顾名思义, rebase 是用来更改 commit 的 base 的. 通常来说, 你的每个分支都会有一个或者是更多个的 "base commits": 指你的分支是从哪个 commit 开始创建的. 以下面这张图描述的这种典型情况为例, 我们可以注意到箭头是指向父 commit 的, 而不是指向子 commit, 因为实际上是子 commit 中含有对父 commit 的引用. 我们通常将 D 和 Z 视作它们所在分支的头:
+
+
+
+![Branching](https://jwiegley.github.io/git-from-the-bottom-up/images/branching.png)
+
+
+
+> In this case, running branch would show two “heads”: `D` and `Z`, with the common parent of both branches being A. The output of show-branch shows us just this information:
+
+在如上图所示的这个情况中, 我们可以看到这些分支一共有两个 "头": `D` 和 `Z`, 它们的公共祖先是 `A`. `show-branch` 指令的输出结果向我们展示了这一点:
+
+
+
+```bash
+$ git branch
+  Z
+* D
+
+$ git show-branch
+! [Z] Z
+ * [D] D
+--
+ * [D] D
+ * [D^] C
+ * [D~2] B
++  [Z]Z
++  [Z^]Y
++  [Z~2] X
++  [Z~3] W
++* [D~3] A
+```
+
+
+
+> Reading this output takes a little getting used to, but essentially it’s no different from the diagram above. Here’s what it tells us:
+
+阅读这个输出需要我们花一点时间来习惯它, 但是它实际上给出的信息和上面那张示意图没有什么区别. 以下是这个输出的阅读方法:
+
+[ 译者注: 实际上这些内容可以在命令 `git help show-branch` 中看到. ]
+
+
+
+> * The branch we’re on experienced its first divergence at commit `A` (also known as commit `D~3`, and even `Z~4` if you feel so inclined). The syntax `commit^` is used to refer to the parent of a commit, while `commit~3` refers to its third parent, or great-grandparent.
+> * Reading from bottom to top, the first column (the plus signs) shows a divergent branch named `Z` with four commits: `W`, `X`, `Y` and `Z`.
+> * The second column (the asterisks) show the commits which happened on the current branch, namely three commits: `B`, `C` and `D`.
+> * The top of the output, separated from the bottom by a dividing line, identifies the branches displayed, which column their commits are labelled by, and the character used for the labeling.
+
+* 我们目前在 repository 中拥有的两个分支是从 `A` 开始分支的.
+* 从下往上读,第一列字符 (一列 `+`) 告诉我们, 分支 `Z` 在分叉后拥有的 commit 依次是: `W`, `X`, `Y` 还有 `Z`.
+* 同样, 第二列字符 (一列 `*`) 告诉我们, 分支 `D` 在分叉后拥有的 commit 依次是: `B`, `C` 还有 `D`.
+* 在整个输出的最上面有一些被 `--` 分开的部分, 这里是在告诉我们分支的头是谁, 以及下面的一系列输出中, 开头的第几列是和这个分支对应的, 使用 `*` 标注的分支是当前 checkout 的, 其他的分支头使用 `!`, 而在接下来的部分中使用 `+`.
+
+
+
+> The action we’d like to perform is to bring the working branch `Z` back up to speed with the main branch, `D`. In other words, we want to incorporate the work from `B`, `C`, and `D` into `Z`.
+
+我们接下来想做的事情是把分支 `Z` 并入主分支 `D`. 换句话说, 我们希望把`B`, `C` 以及 `D` 做出的更改也写进 `Z`.
+
+> In other version control systems this sort of thing can only be done using a “branch merge”. In fact, a branch merge can still be done in Git, using `merge`, and remains needful in the case where `Z` is a published branch and we don’t want to alter its commit history. Here are the commands to run:
+
+在其他的版本控制系统中, 这是一件只能通过 "分支合并" 操作完成的事情. 而实际上所谓的分支合并在 Git 中也是可以被完成的, 只要使用 `merge` 命令就可以了, 如果我们不想更改 `Z` 的 commit 历史, 那么我们可以运行这些命令:
+
+
+
+```bash
+$ git checkout Z # switch to the Z branch
+$ git merge D # merge commits B, C and D into Z
+```
+
+
+
+> This is what the repository looks like afterward:
+
+运行完了以后你的 repository 看起来会像是下面图中的这样:
+
+
+
+![Branch Merge](https://jwiegley.github.io/git-from-the-bottom-up/images/branch-merge.png)
+
+
+
+> If we checked out the `Z` branch now, it would contain the contents of the previous `Z` (now referenceable as `Z^`), merged with the contents of `D`. (Though note: a real merge operation would have required resolving any conflicts between the states of `D` and `Z`).
+
+如果我现在检出分支 `Z`, 注意 "分支 `Z`" 只是一个 commit 的别名, 它曾经指 commit Z, 而现在它是图中的 `Z'`, 分支 `Z` (现在指代 commit `Z`) 现在会包含 commit `Z` 和 commit `D` 合并过后的内容. 当然, 要进行一个 `merge` 操作需要先处理所有 `D` 和 `Z` 之间的冲突.
+
+> Although the new `Z` now contains the changes from `D`, it also includes a new commit to represent the merging of `Z` with `D`: the commit now shown as `Z’`. This commit doesn’t add anything new, but represents the work done to bring `D` and `Z` together. In a sense it’s a “meta-commit”, because its contents are related to work done solely in the repository, and not to new work done in the working tree.
+
+在新的 `Z` 现在包含了 `D` 中做出的更改的同时, 在新 `Z` 中同样存在着一个新的 commit, 这个 commit 是用来合并 `Z` 和 `D `的: 就是上图中的 `Z'`. 这个 commit 很可能没有添加任何新的更改, 只是意味着做了一些工作将 `D` 和 `Z` 合并到了一起. 某种意义上来说, 这算是一种 "meta-commit", 因为它的内容只是对 repository 的更改, 而不是对 working tree 的更改. 
+
+
+
+> There is a way, however, to transplant the `Z` branch straight onto `D`, effectively moving it forward in time: by using the powerful rebase command. Here’s the graph we’re aiming for:
+
+实际上还有一种办法能直接将分支 `Z` 移植到 `D` 上, 通过 `rebase` 命令, 可以直接把 `D` 快进. 如下图所示:
+
+
+
+![Rebase](https://jwiegley.github.io/git-from-the-bottom-up/images/rebase.png)
+
+
+
+> This state of affairs most directly represents what we’d like done: for our local, development branch `Z` to be based on the latest work in the main branch `D`. That’s why the command is called “rebase”, because it changes the base commit of the branch it’s run from. If you run it repeatedly, you can carry forward a set of patches indefinitely, always staying up-to-date with the main branch, but without adding unnecessary merge commits to your development branch. Here are the commands to run, compared to the merge operation performed above:
+
+我们可以这样来描述我们实际上想干啥: 我们直接把我们在本地进行开发的分支 `Z` 的 "base commit" 改成了 `D`. 这正是上问提到的 `rebase` 命令为什么会被称作 "rebase". 如果你不停地运行这个命令, 就可以在没有额外的 merge commit 的情况下更新主分支的数据. 以下是运行 `rebase` 需要的指令:
+
+
+
+```bash
+$ git checkout Z # switch to the Z branch
+$ git rebase D # change Z’s base commit to point to D
+```
+
+
+
+> Why is this only for local branches? Because every time you rebase, you’re potentially changing every commit in the branch. Earlier, when `W` was based on ` A`, it contained only the changes needed to transform `A` into `W`. After running rebase, however, `W` will be rewritten to contain the changes necessary to transform `D` into `W’`. Even the transformation from `W` to `X` is changed, because `A+W+X` is now `D+W’+X’` — and so on. If this were a branch whose changes are seen by other people, and any of your downstream consumers had created their own local branches off of `Z`, their branches would now point to the old `Z`, not the new `Z’`.
+
+为什么我们说这种操作只能对本地分支进行呢? 这是因为每当运行 `rebase` 命令的时候, 我们实际上将分支中的每一个 commit 都进行了更改. 之前的 `W` 是基于 `A` 做出的修改, 如果我们认为一个 commit 中只包含更改的信息的话 [ 译者注: 虽然实际上并不是这样, 因为每个 commit 中的 tree 都只是一个快照而已 ] , 那么 `W` 实际上只含有 "从 `A` 变成 `W`" 做出的变化. 但是运行完 `rebase` 之后, `W` 实际上就包含了从 `D` 变成 `W'` 产生的变化. 以及 `W` 和 `X` 之间的更改都产生了改变, 因为原来的 `A+W+X` 现在是 `D+W'+X'` — 其他的 commit 也有类似的变化. 如果这样的一个分支中的更改对于其他人来说是可见的, 以及从你的 repository 中获得源代码的下游人员中有人用原来的 `Z` 创建了新的分支, 那么他们的 `Z` 并不会指向 `rebase` 后的那个新 `Z`.
+
+[ 译者注: 这里我个人觉得可以这样理解. commit 是一个 object, 在 Git 中一个 object 的名字是由它的 SHA1 值来决定的, 而 SHA1 值是由内容决定的. 那么当我们说, 一个 commit 被改变的时候, 我们实际上想表达的意思是, 这个 commit 的 SHA1 值发生了变化, 也就是 commit 的内容发生了变化. 根据前文的说法我们知道, 一个 commit 中, 是包含有它的父 commit 的引用的, 如果一个 commit 的父 commit 被用 `rebase` 指令改掉了, 那么它本身的 SHA1 值是会发生变化的, 而它本身发生了变化之后, 所有直接或者间接引用了它的其他 commit 的值也都会因为这样的理由而发生变化 ]
+
+
+
+> Generally, the following rule of thumb can be used: Use rebase if you have a local branch with no other branches that have branched off from it, and use merge for all other cases. merge is also useful when you’re ready to pull your local branch’s changes back into the main branch.
+
+通常来说, 以下的经验法则是很有用的: 只要一个本地分支上没有再分出其他的分支, 那么我们就使用 `rebase` 命令来合并分支, 其他的情况一律使用 `merge`. `merge` 这个命令在你想把你的本地分支合并进主分支的时候很有用.
 
 
 
