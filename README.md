@@ -845,3 +845,96 @@ $ git rebase D # change Z’s base commit to point to D
 
 
 
+### 1.8 Interactive rebasing | 交互式的 rebase 命令
+
+
+
+> When rebase was run above, it automatically rewrote all the commits from `W` to `Z` in order to rebase the `Z` branch onto the `D` commit (i.e., the head commit of the `D` branch). You can, however, take complete control over how this rewriting is done. If you supply the `-i` option to `rebase`, it will pop you into an editing buffer where you can choose what should be done for every commit in the local `Z` branch:
+
+就像上面说的那样, 当你运行一个 rebase 命令的时候, 它将为了将 `Z` 分支的 base 更改到分支 `D` 的头上, 而自动的重写从 `W` 到 `Z` 的所有 commit. 其实你是完全可以控制这个重写的过程的. 给 `rebase` 传递一个 `-i` 参数, 那么你将进入一个可编辑的缓冲区, 在这个界面里, 你可以选择到底应该对 `Z` 分支上的每个 commit 做些什么:
+
+
+
+> * **pick** — This is the default behavior chosen for every commit in the branch if you don’t use interactive mode. It means that the commit in question should be applied to its (now rewritten) parent commit. For every commit that involves conflicts, the `rebase` command gives you an opportunity to resolve them.
+
+
+* **pick** — 这是如果你不使用交互模式的时候会执行的默认操作, 它意味着你选中了这个分支中的每一个 commit, 也就是说: 每一个分支上的 commit 都将更改自己的父 commit 到它被重写过的父 commit 上. 对于每个可能产生冲突的 commit, 你会有机会解决它们.
+
+> * **squash** — A squashed commit will have its contents “folded” into the contents of the commit preceding it. This can be done any number of times. If you took the example branch above and squashed all of its commits (except the first, which must be a **pick** in order to **squash**), you would end up with a new `Z` branch containing only one commit on top of `D`. Useful if you have changes spread over multiple commits, but you’d like the history rewritten to show them all as a single commit.
+
+
+* **squash** — 一个被 "压扁" 的 commit 将会将它之中的更改 "折叠" 进它的新父 commit 里. 这个操作可以不限次数地进行. 如果你对上面说的那个例子, 将除了第一个 commit 以外 (为了进行 **squash** 需要先进行一个 **pick**) 的所有 commit "压扁", 那么你将会将分支 `D` 中的所有更改折叠成一个 commit, 然后将这个 commit 应用在分支 `Z` 上. 如果你不想保留更改历史, 只想留下一个 commit 的话, 这个模式还挺好用的.
+
+> **edit** — If you mark a commit as **edit**, the rebasing process will stop at that commit and leave you at the shell with the current working tree set to reflect that commit. The index will have all the commit’s changes registered for inclusion when you run `commit`. You can thus make whatever changes you like: amend a change, undo a change, etc.; and after committing, and running `rebase --continue`, the commit will be rewritten as if those changes had been made originally.
+
+
+* **edit** — 如果你将一个 commit 标记为了 **edit** 模式, 那么这个 rebase 命令将在这个 commit 这里停下来, 然后让你在你的 working tree 中编辑文件, 你可以重做一次这个 commit 做过的修改. 随后你运行 `commit` 命令的时候, the index 中将会含有所有已经提交的更改. 你可能会在类似以下的情况下使用这个模式: 添加一个更改到这个 commit 中, 或者说撤销一个更改. 在你提交 commit 之后, 运行 `rebase --continue`, 那个被标记为 edit 的 commit 将会被你新编辑的这个 commit 代替. 
+
+> * **(drop)** — If you remove a commit from the interactive rebase file, or if you comment it out, the commit will simply disappear as if it had never been checked in. Note that this can cause merge conflicts if any of the later commits in the branch depended on those changes.
+
+
+* **(drop)** — 如果你打算删除一个 commit. 这个 commit 将会像是从来没有被记录过一样不复存在. 注意:如果后续的其他 commit 是基于这个 commit 的更改的, 那么这个操作很可能引起合并冲突.
+
+
+
+> The power of this command is hard to appreciate at first, but it grants you virtually unlimited control over the shape of any branch. You can use it to:
+
+交互式的 rebase 命令的用处很难一下子说清, 但是这个命令让你有了几乎不受限制的能力, 来对任何分支做出任何形式的调整. 你实际上可以用这个命令来:
+
+> * Collapse multiple commits into single ones.
+> * Re-order commits.
+> * Remove incorrect changes you now regret.
+> * Move the base of your branch _onto any other commit in the repository_.
+> * Modify a single commit, to amend a change long after the fact.
+
+* 将多个 commit 折叠成一个.
+* 重新调整 commit 的顺序.
+* 将不正确的更改删除.
+* 将你的分支的 base 移动到你的 repository 中的任何一个 commit 上.
+* 更改一个单独的 commit, 比如说在实际上这个 commit 已经被提交之后, 往里面添加更改.
+
+
+
+> I recommend reading the man page for `rebase` at this point, as it contains several good examples how the true power of this beast may be unleashed. To give you one last taste of how potent a tool this is, consider the following scenario and what you’d do if one day you wanted to migrate the secondary branch `L` to become the new head of `Z`:
+
+我在这里十分建议读者阅读一下 `rebase` 的帮助页面. 其中有几个可以帮助你理解这个强大命令的能力到底应该被如果使用的优秀例子. 为了让读者至少对这个工具到底有多屌有一点点的认识, 我们来看一下下面这个例子:
+
+
+
+![Rebasing Multiple Branches Part 1](https://jwiegley.github.io/git-from-the-bottom-up/images/rebasing-branches-1.png)
+
+
+
+如果你打算将分支 `L` 迁移到分支 `Z` 上, 并且使得 commit `L` 是分支 `Z` 的新头, 你会怎么做呢?
+
+> The picture reads: we have our main-line of development, `D`, which three commits ago was branched to begin speculative development on `Z`. At some point in the middle of all this, back when `C` and `X` were the heads of their respective branches, we decided to begin another speculation which finally produced `L`. Now we’ve found that `L`’s code is good, but not quite good enough to merge back over to the main-line, so we decide to move those changes over to the development branch `Z`, making it look as though we’d done them all on one branch after all. Oh, and while we’re at it, we want to edit `J` real quick to change the copyright date, since we forgot it was 2008 when we made the change! Here are the commands needed to untangle this knot:
+
+这个图实际上在说: 我们主要的开发发生在分支 `D` 上, 而这个分支 `D` 在三个 commit 之前, 分支出了一个 `Z` 来进行试探性质的开发. 在 `C` 和 `X` 还是分支的头的时候, 有人尝试合并了两个分支, 进行了新一轮的试探性开发, 最终产出了分支 `L`. 那么现在我们知道了 commit `L` 的代码是很优秀的, 但是还没有优秀到足以合并回主分支的程度, 我们为了进一步改进这个代码, 希望把 `L` 上的更改移动到分支 `Z` 上, 然后调整得足够好了以后, 再合并回主分支. 顺便, 我们在做这一切的同时, 还希望编辑一下 commit `J` 来简单的变更一下版权信息的日期, 因为当初提交 commit `J` 的时候忘了改它. 那么以下是解决以上这些麻烦的问题所需要的命令:
+
+
+
+```bash
+$ git checkout L
+$ git rebase -i Z
+```
+
+
+
+> After resolving whatever conflicts emerge, I now have this repository:
+
+处理完冲突以后, 我的 repository 看起来像下图这样:
+
+
+
+![Rebasing Multiple Branches Part 1](https://jwiegley.github.io/git-from-the-bottom-up/images/rebasing-branches-1.png)
+
+
+
+> As you can see, when it comes to local development, rebasing gives you unlimited control over how your commits appear in the repository.
+
+就像你看到的那样, 如果只是本地开发, rebase 让你几乎有了对 commit 完全的控制能力, 你想让他们是什么样子就可以是什么样子.
+
+
+
+
+
