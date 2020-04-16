@@ -4,13 +4,14 @@
 
 这是一个 [git from the bottom up](https://jwiegley.github.io/git-from-the-bottom-up/) 的中文翻译.
 
+
 由于译者水平有限, 保留了英文, 防止误解.
 
 
 
 
 
-## Introduction | 介绍
+## 0 Introduction | 介绍
 
 
 
@@ -24,7 +25,7 @@
 
 
 
-### repository
+### 0.1 repository
 
 
 
@@ -34,7 +35,7 @@
 
 
 
-### the index
+### 0.2 the index
 
 
 
@@ -44,7 +45,7 @@
 
 
 
-### working tree
+### 0.3 working tree
 
 
 
@@ -54,7 +55,7 @@
 
 
 
-### commit
+### 0.4 commit
 
 
 
@@ -66,7 +67,7 @@
 
 
 
-### branch
+### 0.5 branch
 
 
 
@@ -78,7 +79,7 @@
 
 
 
-### tag
+### 0.6 tag
 
 
 
@@ -88,7 +89,7 @@
 
 
 
-### master
+### 0.7 master
 
 
 
@@ -98,7 +99,7 @@
 
 
 
-### HEAD
+### 0.8 HEAD
 
 
 
@@ -938,3 +939,412 @@ $ git rebase -i Z
 
 
 
+## 2 The Index
+
+
+
+### 2.1 The Index: Meet the middle man
+
+
+
+> Between your data files, which are stored on the filesystem, and your Git blobs, which are stored in the repository, there stands a somewhat strange entity: the Git index. Part of what makes this beast hard to understand is that it’s got a rather unfortunate name. It’s an index in the sense that it refers to the set of newly created trees and blobs which you created by running add. These new objects will soon get bound into a new tree for the purpose of committing to your repository — but until then, they are only referenced by the index. That means that if you unregister a change from the index with reset, you’ll end up with an orphaned blob that will get deleted at some point at the future.
+
+> The index is really just a staging area for your next commit, and there’s a good reason why it exists: it supports a model of development that may be foreign to users of CVS or Subversion, but which is all too familiar to Darcs users: the ability to build up your next commit in stages.
+
+
+
+![The Index](../images/the-index.png)
+
+
+
+> First, let me say that there is a way to ignore the index almost entirely: by passing the `-a` flag to commit. Look at the way Subversion works, for example. When you type `svn status`, what you’ll see is a list of actions to be applied to your repository on the next call to `svn commit`. In a way, this “list of next actions” is a kind of informal index, determined by comparing the state of your working tree with the state of HEAD. If the file `foo.c` has been changed, on your next commit those changes will be saved. If an unknown file has a question mark next to it, it will be ignored; but a new file which has been added with `svn add` will get added to the repository.
+
+> This is no different from what happens if you use `commit -a`: new, unknown files are ignored, but new files which have been added with add are added to the repository, as are any changes to existing files. This interaction is nearly identical with the Subversion way of doing things.
+
+> The real difference is that in the Subversion case, your “list of next actions” is always determined by looking at the current working tree. In Git, the “list of next actions” _is_ the contents of the index, which represents what will become the next state of HEAD, and that you can manipulate directly before executing `commit`. This gives you an extra layer of control over what’s going to happen, by allowing you to stage those changes in advance.
+
+> If this isn’t clear yet, consider the following example: you have a trusty source file, `foo.c`, and you’ve made two sets of unrelated changes to it. What you’d like to do is to tease apart these changes into two different commits, each with its own description. Here’s how you’d do this in Subversion:
+
+
+
+```bash
+$ svn diff foo.c > foo.patch
+$ vi foo.patch
+<edit foo.patch, keeping the changes I want to commit later>
+$ patch -p1 -R < foo.patch  # remove the second set of changes
+$ svn commit -m "First commit message"
+$ patch -p1 < foo.patch  # re-apply the remaining changes
+$ svn commit -m "Second commit message"
+```
+
+
+
+> Sounds like fun? Now repeat that many times over for a complex, dynamic set of changes. Here’s the Git version, making use of the index:
+
+
+
+```
+$ git add --patch foo.c
+<select the hunks I want to commit first>
+$ git commit -m "First commit message"
+$ git add foo.c  # add the remaining changes
+$ git commit -m "Second commit message"
+```
+
+
+
+> What’s more, it gets even easier! If you like Emacs, the superlative tool `gitsum.el`, by Christian Neukirchan, puts a beautiful face on this potentially tedious process. I recently used it to tease apart 11 separate commits from a set of conflated changes. Thank  
+
+
+
+### 2.2 Taking the index further
+
+
+
+> Let’s see, the index... With it you can pre-stage a set of changes, thus iteratively building up a patch before committing it to the repository. Now, where have I heard that concept before...
+
+> If you’re thinking “Quilt!”, you’re exactly right. In fact, the index is little different from Quilt, it just adds the restriction of allowing only one patch to be constructed at a time.
+
+> But what if, instead of two sets of changes within `foo.c`, I had four? With plain Git, I’d have to tease each one out, commit it, and then tease out the next. This is made much easier using the index, but what if I wanted to test those changes in various combinations with each other before checking them in? That is, if I labelled the patches A, B, C and D, what if I wanted to test A + B, then A + C, then A + D, etc., before deciding if any of the changes were truly complete?
+
+> There is no mechanism in Git itself that allows you to mix and match parallel sets of changes on the fly. Sure, multiple branches can let you do parallel development, and the index lets you stage multiple changes into a series of commits, but you can’t do both at once: staging a series of patches while at the same time selectively enabling and disabling some of them, to verify the integrity of the patches in concert before finally committing them.
+What you’d need in order to do something like this would be an index which allows for greater depth than one commit at a time. This is exactly what Stacked Git provides.
+
+> Here’s how I’d commit two different patches into my working tree using plain Git:
+
+
+
+```bash
+$ git add -i # select first set of changes
+$ git commit -m "First commit message"
+$ git add -i # select second set of changes
+$ git commit -m "Second commit message"
+```
+
+
+
+> This works great, but I can’t selectively disable the first commit in order to test the second one alone. To do that, I’d have to do the following:
+
+
+
+```bash
+$ git log # find the hash id of the first commit
+$ git checkout -b work <first commit’s hash id>
+$ git cherry-pick <second commit’s hash id>
+<... run tests ...>
+$ git checkout master # go back to the master "branch"
+$ git branch -D work # remove my temporary branch
+```
+
+
+
+> Surely there has to be a better way! With `stg` I can queue up both patches and then re-apply them in whatever order I like, for independent or combined testing, etc. Here’s how I’d queue the same two patches from the previous example, using `stg`:
+
+
+
+```bash
+$ stg new patch1
+$ git add -i  # select first set of changes
+$ stg refresh --index
+$ stg new patch2
+$ git add -i  # select second set of changes
+$ stg refresh --index
+```
+
+
+> Now if I want to selectively disable the first patch to test only the second, it’s very straightforward:
+
+
+
+```bash
+$ stg applied
+patch1
+patch2
+<...  do tests using both patches ...>
+$ stg pop patch1
+<...  do tests using only patch2 ...>
+$ stg pop patch2
+$ stg push patch1
+<...  do tests using only patch1 ...>
+$ stg push -a
+$ stg commit -a  # commit all the patches
+```
+
+
+
+> This is definitely easier than creating temporary branches and using `cherry-pick` to apply specific commit ids, followed by deleting the temporary branch.
+
+
+
+
+
+
+## 3 Reset
+
+
+### 3.1 To reset, or not to reset
+
+
+
+> One of the more difficult commands to master in Git is `reset`, which seems to bite people more often than other commands. Which is understandable, giving that it has the potential to change both your working tree and your current HEAD reference. So I thought a quick review of this command would be useful.
+
+
+
+> Basically, `reset` is a reference editor, an index editor, and a working tree editor. This is partly what makes it so confusing, because it’s capable of doing so many jobs. Let’s examine the difference between these three modes, and how they fit into the Git commit model.
+
+
+
+### 3.2 Doing a mixed reset
+
+
+
+> If you use the `--mixed` option (or no option at all, as this is the default), reset will revert parts of your index along with your HEAD reference to match the given commit. The main difference from `--soft` is that `--soft` only changes the meaning of HEAD and doesn’t touch the index.
+
+
+
+```bash
+$ git add foo.c  # add changes to the index as a new blob
+$ git reset HEAD  # delete any changes staged in the index
+$ git add foo.c  # made a mistake, add it back
+```
+
+
+### 3.3 Doing a soft reset
+
+> If you use the `--soft` option to `reset`, this is the same as simply changing your HEAD reference to a different commit. Your working tree changes are left untouched. This means the following two commands are equivalent:
+
+
+
+```bash
+$ git reset --soft HEAD^     # backup HEAD to its parent,
+                             # effectively ignoring the last commit
+$ git update-ref HEAD HEAD^  # does the same thing, albeit manually
+```
+
+
+
+> In both cases, your working tree now sits on top of an older HEAD, so you should see more changes if you run `status`. It’s not that your files have been changed, simply that they are now being compared against an older version. It can give you a chance to create a new commit in place of the old one. In fact, if the commit you want to change is the most recent one checked in, you can use `commit --amend` to add your latest changes to the last commit as if you’d done them together.
+
+> But please note: if you have downstream consumers, and they’ve done work on top of your previous head — the one you threw away — changing HEAD like this will force a merge to happen automatically after their next pull. Below is what your tree would look like after a soft reset and a new commit:
+
+
+
+![Soft Reset Commit](../images/soft-reset-commit.png)
+
+
+
+> And here’s what your consumer’s HEAD would look like after they pulled again, with colors to show how the various commits match up:
+
+
+
+### 3.4 Doing a hard reset
+
+
+
+> A hard reset (the `--hard` option) has the potential of being very dangerous, as it’s able to do two different things at once: First, if you do a hard reset against your current HEAD, it will erase all changes in your working tree, so that your current files match the contents of HEAD.
+
+> There is also another command, `checkout`, which operates just like `reset --hard` if the index is empty. Otherwise, it forces your working tree to match the index.
+
+> Now, if you do a hard reset against an earlier commit, it’s the same as first doing a soft reset and then using reset `--hard` to reset your working tree. Thus, the following commands are equivalent:
+
+
+
+```bash
+$ git reset --hard HEAD~3  # Go back in time, throwing away changes
+$ git reset --soft HEAD~3  # Set HEAD to point to an earlier commit
+$ git reset --hard  # Wipe out differences in the working tree
+```
+
+
+
+> As you can see, doing a hard reset can be very destructive. Fortunately, there is a safer way to achieve the same effect, using the Git stash (see the next section):
+
+
+
+```bash
+$ git stash
+$ git checkout -b new-branch HEAD~3   # head back in time!
+```
+
+
+
+> This approach has two distinct advantages if you’re not sure whether you really want to modify the current branch just now:
+
+> 1. It saves your work in the stash, which you can come back to at any time. Note that the stash is not branch specific, so you could potentially stash the state of your tree while on one branch, and later apply the differences to another.
+> 2. It reverts your working tree back to a past state, but on a new branch, so if you decide to commit your changes against the past state, you won’t have altered your original branch.
+
+> If you do make changes to `new-branch` and then decide you want it to become your new master branch, run the following commands:
+
+
+
+```bash
+$ git branch -D master  # goodbye old master (still in reflog)
+$ git branch -m new-branch master  # the new-branch is now my master
+```
+
+
+
+> The moral of this story is: although you can do major surgery on your current branch using `reset --soft` and `reset --hard` (which changes the working tree too), why would you want to? Git makes working with branches so easy and cheap, it’s almost always worth it to do your destructive modifications on a branch, and then move that branch over to take the place of your old master. It has an almost Sith-like appeal to it...
+
+> And what if you do accidentally run `reset --hard`, losing not only your current changes but also removing commits from your master branch? Well, unless you’ve gotten into the habit of using stash to take snapshots (see next section), there’s nothing you can do to recover your lost working tree. But you can restore your branch to its previous state by again using `reset --hard` with the reflog (this will also be explained in the next section):
+
+
+
+```bash
+$ git reset --hard HEAD@{1}   # restore from reflog before the change
+```
+
+
+
+> To be on the safe side, never use `reset --hard` without first running `stash`. It will save you many white hairs later on. If you did run stash, you can now use it to recover your working tree changes as well:
+
+
+
+```bash
+$ git stash  # because it's always a good thing to do
+$ git reset --hard HEAD~3  # go back in time
+$ git reset --hard HEAD@{1}  # oops, that was a mistake, undo it!
+$ git stash apply  # and bring back my working tree changes
+```
+
+
+![Soft Reset Pull](../images/soft-reset-pull.png)
+
+
+
+
+
+## 4 Stashing and the reflog
+
+
+
+> Until now we’ve described two ways in which blobs find their way into Git: first they’re created in your index, both without a parent tree and without an owning commit; and then they’re committed into the repository, where they live as leaves hanging off of the tree held by that commit. But there are two other ways a blob can dwell in your repository.
+
+> The first of these is the Git `reflog`, a kind of meta-repository that records — in the form of commits — every change you make to your repository. This means that when you create a tree from your index and store it under a commit (all of which is done by `commit`), you are also inadvertently adding that commit to the reflog, which can be viewed using the following command:
+
+
+
+```bash
+$ git reflog
+5f1bc85...  HEAD@{0}: commit (initial): Initial commit
+```
+
+
+
+> The beauty of the reflog is that it persists independently of other changes in your repository. This means I could unlink the above commit from my repository (using `reset`), yet it would still be referenced by the reflog for another 30 days, protecting it from garbage collection. This gives me a month’s chance to recover the commit should I discover I really need it.
+
+> The other place blobs can exist, albeit indirectly, is in your working tree itself. What I mean is, say you’ve changed a file `foo.c` but you haven’t added those changes to the index yet. Git may not have created a blob for you, but those changes do exist, meaning the content exists — it just lives in your filesystem instead of Git’s repository. The file even has its own SHA1 hash id, despite the fact no real blob exists. You can view it with this command:
+
+
+
+```bash
+$ git hash-object foo.c
+<some hash id>
+```
+
+
+
+> What does this do for you? Well, if you find yourself hacking away on your working tree and you reach the end of a long day, a good habit to get into is to stash away your changes:
+
+
+
+```bash
+$ git stash
+```
+
+
+
+> This takes all your directory’s contents — including both your working tree, and the state of the index — and creates blobs for them in the git repository, a tree to hold those blobs, and a pair of stash commits to hold the working tree and index and record the time when you did the stash.
+
+> This is a good practice because, although the next day you’ll just pull your changes back out of the stash with `stash apply`, you’ll have a reflog of all your stashed changes at the end of every day. Here’s what you’d do after coming back to work the next morning (WIP here stands for “Work in progress”):
+
+
+
+```bash
+$ git stash list
+stash@{0}: WIP on master: 5f1bc85...  Initial commit
+
+$ git reflog show stash # same output, plus the stash commit's hash id 2add13e... stash@{0}: WIP on master: 5f1bc85... Initial commit
+
+$ git stash apply
+```
+
+
+
+> Because your stashed working tree is stored under a commit, you can work with it like any other branch — at any time! This means you can view the log, see when you stashed it, and checkout any of your past working trees from the moment when you stashed them:
+
+
+
+```bash
+$ git stash list
+stash@{0}: WIP on master: 73ab4c1...  Initial commit
+...
+stash@{32}: WIP on master: 5f1bc85...  Initial commit
+$ git log stash@{32}  # when did I do it?
+$ git show stash@{32}  # show me what I was working on
+$ git checkout -b temp stash@{32}  # let’s see that old working tree!
+```
+
+
+
+> This last command is particularly powerful: behold, I’m now playing around in an uncommitted working tree from over a month ago. I never even added those files to the index; I just used the simple expedient of calling `stash` before logging out each day (provided you actually had changes in your working tree to stash), and used `stash apply` when I logged back in.
+
+> If you ever want to clean up your stash list — say to keep only the last 30 days of activity — don’t use `stash clear`; use the `reflog expire` command instead:
+
+
+
+```bash
+$ git stash clear  # DON'T! You'll lose all that history
+$ git reflog expire --expire=30.days refs/stash
+<outputs the stash bundles that've been kept>
+```
+
+
+
+> The beauty of `stash` is that it lets you apply unobtrusive version control to your working process itself: namely, the various stages of your working tree from day to day. You can even use `stash` on a regular basis if you like, with something like the following `snapshot` script:
+
+
+
+```bash
+$ cat <<EOF > /usr/local/bin/git-snapshot
+#!/bin/sh
+git stash && git stash apply
+EOF
+$ chmod +x $_
+$ git-snapshot
+```
+
+
+
+> There’s no reason you couldn’t run this from a `cron` job every hour, along with running the `reflog expire` command every week or month.
+
+
+
+
+
+
+## 5 Conclusion
+
+
+
+> Over the years I’ve used many version control systems, and many backup schemes. They all have facilities for retrieving the past contents of a file. Most of them have ways to show how a file has differed over time. Many permit you to go back in time, begin a divergent line of reasoning, and then later bring these new thoughts back to the present. Still fewer offer fine-grained control over that process, allowing you to collect your thoughts however you feel best to present your ideas to the public. Git lets you do all these things, and with relative ease — once you understand its fundamentals.
+
+> It’s not the only system with this kind of power, nor does it always employ the best interface to its concepts. What it does have, however, is a solid base to work from. In the future, I imagine many new methods will be devised to take advantage of the flexibilities Git allows. Most other systems have led me to believe they’ve reached their conceptual plateau — that all else from now will be only a slow refinement of what I’ve seen before. Git gives me the opposite impression, however. I feel we’ve only begun to see the potential its deceptively simple design promises.
+
+
+
+
+
+## 6 Further reading
+
+
+
+> If your interest to learn Git more has been piqued, please check out the following articles:
+
+> * A tour of Git: the basics - [http://cworth.org/hgbook-git/tour/](http://cworth.org/hgbook-git/tour/)
+ * Manage source code using Git - [http://www.ibm.com/developerworks/linux/library/l-git/](http://www.ibm.com/developerworks/linux/library/l-git/)
+ * A tutorial introduction to git - [http://git-scm.com/docs/gittutorial](http://git-scm.com/docs/gittutorial)
+ * GitFaq — GitWiki - [https://git.wiki.kernel.org/index.php/GitFaq](https://git.wiki.kernel.org/index.php/GitFaq)
+ * A git core tutorial for developers - [http://www.kernel.org/pub/software/scm/git/docs/gitcore-tutorial.html](https://www.kernel.org/pub/software/scm/git/docs/gitcore-tutorial.html)
+ * git for the confused - [http://www.gelato.unsw.edu.au/archives/git/0512/13748.html](http://www.gelato.unsw.edu.au/archives/git/0512/13748.html)
+ * The thing About Git - [http://tomayko.com/writings/the-thing-about-git](http://tomayko.com/writings/the-thing-about-git)
