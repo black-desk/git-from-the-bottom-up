@@ -943,27 +943,49 @@ $ git rebase -i Z
 
 
 
-### 2.1 The Index: Meet the middle man
+
+
+### 2.1 The Index: Meet the middle man | The Index : 中间人
 
 
 
 > Between your data files, which are stored on the filesystem, and your Git blobs, which are stored in the repository, there stands a somewhat strange entity: the Git index. Part of what makes this beast hard to understand is that it’s got a rather unfortunate name. It’s an index in the sense that it refers to the set of newly created trees and blobs which you created by running add. These new objects will soon get bound into a new tree for the purpose of committing to your repository — but until then, they are only referenced by the index. That means that if you unregister a change from the index with reset, you’ll end up with an orphaned blob that will get deleted at some point at the future.
 
+在你的数据文件, 与 Git 中存储的 blob 之间还存在着一个奇怪的媒介, 我们称之为 the Git index. 这个令人困惑的名字使得它很难被人理解. 从某种意义上来讲, 它确实是一种索引: 它引用一个由新添加的 tree* 和 blob 组成的集合, 这个集合是用户通过运行 add 命令创建的. 在这些对象真正被添加到一个 tree, 并且最终成为一个 commit 加入到你的 repository 中之前, 这些新的对象, 它们仅仅只被 the index 引用而已. 这意味着如果你通过 reset 命令将一个被记录到 the index 中的更改撤销掉的话, 那么你原本新创建的 blob 会成为没有人引用的孤儿, 这种 blob 在未来的某个时间点会被删除.
+
+[ 译者注: 这里的 tree 指的是被新 commit 直接管理的那个 tree 的 sub-tree. ]
+
+
+
 > The index is really just a staging area for your next commit, and there’s a good reason why it exists: it supports a model of development that may be foreign to users of CVS or Subversion, but which is all too familiar to Darcs users: the ability to build up your next commit in stages.
 
+The index 实际上起到的作用只是一个为你的下一个 commit 而设立的暂存区罢了. 它使得你有了在一个暂存区里搭建你的下一个 commit 的能力, 这种开发方式对于 Darcs 的用户来说相对熟悉, 而对于 CVS 或者是 Subversion 的用户来说这可能会很陌生.
 
 
-![The Index](../images/the-index.png)
+
+![The Index](https://jwiegley.github.io/git-from-the-bottom-up/images/the-index.png)
 
 
 
 > First, let me say that there is a way to ignore the index almost entirely: by passing the `-a` flag to commit. Look at the way Subversion works, for example. When you type `svn status`, what you’ll see is a list of actions to be applied to your repository on the next call to `svn commit`. In a way, this “list of next actions” is a kind of informal index, determined by comparing the state of your working tree with the state of HEAD. If the file `foo.c` has been changed, on your next commit those changes will be saved. If an unknown file has a question mark next to it, it will be ignored; but a new file which has been added with `svn add` will get added to the repository.
 
+首先, 实际上是有一种办法能几乎忽略掉 the index 的方法的: 只要在使用 commit 命令的时候传递 `-a` 这个参数, 就可以了. 我们以 Subversion 的工作方式为例. 我们输入 `svn status`, 这个命令的输出是一个关于你的下一个 `svn commit` 命令将对于你的 repository 做出怎样的更改的列表. 在这个例子中, 那个列表可以看作是 Git 中的 the index, 毕竟这个通过比较你当前 working tree 和 HEAD 之间的状态差异而得到的列表, 从某种程度上来说是一种信息的索引. 比方说如果文件 `foo.c` 被更改了, 那么就会出现在这个列表中, 这意味着你的下一个 commit 会将这个更改写入你的 repository 中. 如果一个文件的后面有一个 `?`, 那么意味着这个文件将被版本管理系统忽略; 但是如果通过 `snv add` 将文件添加进管理, 那么这个文件将被加入到 repository 中.
+
+
+
 > This is no different from what happens if you use `commit -a`: new, unknown files are ignored, but new files which have been added with add are added to the repository, as are any changes to existing files. This interaction is nearly identical with the Subversion way of doing things.
+
+实际上当你在 Git 中使用 `commit -a` 命令的时候, 发生的事情几乎和上面描述的一致: 新建的文件需要使用 add 手动添加, 否则就像被忽略的文件一样, 并不会被添加进 repository. 而以前添加过的文件中的更改则会被加入 repository. 这个交互方式几乎和 Subversion 没有什么区别.
 
 > The real difference is that in the Subversion case, your “list of next actions” is always determined by looking at the current working tree. In Git, the “list of next actions” _is_ the contents of the index, which represents what will become the next state of HEAD, and that you can manipulate directly before executing `commit`. This gives you an extra layer of control over what’s going to happen, by allowing you to stage those changes in advance.
 
+这两者之间的区别实际上在于, 在 Subversion 中, 那个列表总是通过检查你的当前工作区来列出的. 而在 Git 中, 这个列表的功能, 由 the index 中记录的内容来承担. 这个 the index 中指示着 HEAD 这个 commit 接下来会是什么样的状态, 而你可以在 commit 之前直接对 the index 做出调整. 这实际上让你对更改的控制能力变得更强了.
+
+
+
 > If this isn’t clear yet, consider the following example: you have a trusty source file, `foo.c`, and you’ve made two sets of unrelated changes to it. What you’d like to do is to tease apart these changes into two different commits, each with its own description. Here’s how you’d do this in Subversion:
+
+如果上面这种说法还不够明确. 那么我们可以考虑一下下面这个例子: 你有一个可以信任的源文件, 它是 `foo.c`, 你还有对他做出了两组没什么关联的更改. 你现在想做的事情是将这两个更改分成两个不同的 commit 进行提交, 每个 commit 都有它自己的说明. 那么你在 Subversion 中应该这么做:
 
 
 
@@ -981,9 +1003,11 @@ $ svn commit -m "Second commit message"
 
 > Sounds like fun? Now repeat that many times over for a complex, dynamic set of changes. Here’s the Git version, making use of the index:
 
+听起来不错? 但是如果你如果用对付的是更复杂的情况呢? 下面是 Git 中的做法, 让我们利用 the index:
 
 
-```
+
+```bash
 $ git add --patch foo.c
 <select the hunks I want to commit first>
 $ git commit -m "First commit message"
@@ -994,6 +1018,10 @@ $ git commit -m "Second commit message"
 
 
 > What’s more, it gets even easier! If you like Emacs, the superlative tool `gitsum.el`, by Christian Neukirchan, puts a beautiful face on this potentially tedious process. I recently used it to tease apart 11 separate commits from a set of conflated changes. Thank  
+
+这是不是简单多了? 如果你喜欢 Emacs, 那么还有个工具叫 `gitsum.el`, 这个工具是由 Christian Neukirchan 开发的, 给这个可能看起来单调乏味的过程添加了一个漂亮的界面. 我最近实际上用它将一个更改拆分成 11 个独立的 commit 过. 真是谢谢 TA 了. 
+
+
 
 
 
