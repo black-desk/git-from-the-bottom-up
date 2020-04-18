@@ -1135,16 +1135,21 @@ $ stg commit -a  # commit all the patches
 ## 3 Reset
 
 
-### 3.1 To reset, or not to reset
+
+
+
+
+### 3.1 To reset, or not to reset | 要不要 reset, 这是一个问题
 
 
 
 > One of the more difficult commands to master in Git is `reset`, which seems to bite people more often than other commands. Which is understandable, giving that it has the potential to change both your working tree and your current HEAD reference. So I thought a quick review of this command would be useful.
 
-
+在 Git 中比较麻烦的命令之一就是 `reset`, 大家似乎都更容易在这个命令上遇到问题. 看起来这个命令由于同时更改了你的 working tree 和你当前的 HEAD 指针, 所以会显得难以理解. 所以我这里需要快速提一下这个命令的作用. 
 
 > Basically, `reset` is a reference editor, an index editor, and a working tree editor. This is partly what makes it so confusing, because it’s capable of doing so many jobs. Let’s examine the difference between these three modes, and how they fit into the Git commit model.
 
+简单来说, `reset` 是一个能编辑 HEAD / index / working 的工具. 这可以部分解释它为什么看起来这么难懂, 因为它实际上确实一下子完成了很多很多工作. 我们会在下面慢慢解释上面提到的三种模式之间的区别, 以及它们在我们前文建立的, 从 commit 的角度理解 Git 的模型中, 到底是如何工作的.
 
 
 ### 3.2 Doing a mixed reset
