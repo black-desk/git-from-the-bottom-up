@@ -1152,11 +1152,14 @@ $ stg commit -a  # commit all the patches
 简单来说, `reset` 是一个能编辑 HEAD / index / working 的工具. 这可以部分解释它为什么看起来这么难懂, 因为它实际上确实一下子完成了很多很多工作. 我们会在下面慢慢解释上面提到的三种模式之间的区别, 以及它们在我们前文建立的, 从 commit 的角度理解 Git 的模型中, 到底是如何工作的.
 
 
-### 3.2 Doing a mixed reset
+
+### 3.2 Doing a mixed reset | 应用一个 mixed reset
 
 
 
 > If you use the `--mixed` option (or no option at all, as this is the default), reset will revert parts of your index along with your HEAD reference to match the given commit. The main difference from `--soft` is that `--soft` only changes the meaning of HEAD and doesn’t touch the index.
+
+如果你使用了 `--mixed` 这个选项 (如果你不带参数调用, 那么默认就是它), `reset` 命令会在将你的 HEAD 指针指向给定的那个 commit, 同时调整 index, 使其与 HEAD 匹配. `--soft` 和这个选项的区别在于, `--soft` 并没有更改 index. 
 
 
 
