@@ -1025,20 +1025,36 @@ $ git commit -m "Second commit message"
 
 
 
-### 2.2 Taking the index further
+### 2.2 Taking the index further | 进一步了解 the index
 
 
 
 > Let’s see, the index... With it you can pre-stage a set of changes, thus iteratively building up a patch before committing it to the repository. Now, where have I heard that concept before...
 
+根据上面所说的,我们可以如此来描述 the index 的功能: 通过它, 我们可以将一系列更改暂存下来, 还可以在更改提交到 repository 之前, 将一次对分拣的更改分成若干的 patch. 我好像曾经在什么地方听到过这个...
+
 > If you’re thinking “Quilt!”, you’re exactly right. In fact, the index is little different from Quilt, it just adds the restriction of allowing only one patch to be constructed at a time.
+
+你很可能会想到一个叫 "[Quilt](https://en.wikipedia.org/wiki/Quilt_(software))" 的软件. 事实上, the index 和 Quilt 有一点点不同, Quilt 实际上只是添加了一个 "一次只允许对代码做出一个 patch 的更改" 的限定而已*.
+
+[ 译者注: 这里我并不确定是不是这个意思, 因为译者并没有使用过 Quilt, 这句是根据维基猜的, 主要是前面那个 it 不知道指的是谁. ]
 
 > But what if, instead of two sets of changes within `foo.c`, I had four? With plain Git, I’d have to tease each one out, commit it, and then tease out the next. This is made much easier using the index, but what if I wanted to test those changes in various combinations with each other before checking them in? That is, if I labelled the patches A, B, C and D, what if I wanted to test A + B, then A + C, then A + D, etc., before deciding if any of the changes were truly complete?
 
-> There is no mechanism in Git itself that allows you to mix and match parallel sets of changes on the fly. Sure, multiple branches can let you do parallel development, and the index lets you stage multiple changes into a series of commits, but you can’t do both at once: staging a series of patches while at the same time selectively enabling and disabling some of them, to verify the integrity of the patches in concert before finally committing them.
-What you’d need in order to do something like this would be an index which allows for greater depth than one commit at a time. This is exactly what Stacked Git provides.
+但是如果我在文件 `foo.c` 中实际上一共有四组的更改呢? 在原生的 Git 中, 我实际上需要一个一个的将属于其中一个 patch 的更改挑选出来, commit, 然后再回去选下一组的. The index 实际上已经大大简化了这个过程, 但是如果我想在提交这些更改前, 对这些更改的多种组合分别做测试呢? 比方说我有四个 patch, 它们分别是 A, B, C, D. 如果我想以这种顺序进行测试: A + B, 然后 A + C, 随后 A + D, 以此类推. 那么我应该怎么做呢? 
 
+> There is no mechanism in Git itself that allows you to mix and match parallel sets of changes on the fly. Sure, multiple branches can let you do parallel development, and the index lets you stage multiple changes into a series of commits, but you can’t do both at once: staging a series of patches while at the same time selectively enabling and disabling some of them, to verify the integrity of the patches in concert before finally committing them.
+> What you’d need in order to do something like this would be an index which allows for greater depth than one commit at a time. This is exactly what Stacked Git provides.
+>
 > Here’s how I’d commit two different patches into my working tree using plain Git:
+
+在 Git 中并没有这样的功能. 多分支确实可以让你完成平行开发, the index 也确实可以让你将更改拆成若干个 commit, 但是实际上你并不能同时做这两个事情: 你不能暂存下一系列 commit 中的更改, 然后去选择其中一些出于启用/关闭的状态, 以此来在提交前验证更改的正确性.
+
+你实际上想做的事情是希望你的 the index 中, 可以存下多个 commit*, 这个功能实际上可以由 Stacked Git 来提供的.
+
+以下是我 commit 两个不同的更改组到我的 working tree 的过程:
+
+[ 译者注: 这里的意思应该是, 如果你的暂存区里有多个 commit, 那么你就可以把他们以任意的组合加到 repository 中, 然后就可以实现上面说的那个事情了. ]
 
 
 
@@ -1052,6 +1068,8 @@ $ git commit -m "Second commit message"
 
 
 > This works great, but I can’t selectively disable the first commit in order to test the second one alone. To do that, I’d have to do the following:
+
+这样实际上还不错, 但是我无法在做完这一切之后, 再将第一个 commit 暂时禁用, 来单独测试第二个 commit. 如果我想做这个事情, 那么我接下来还得做这么一个事情: 
 
 
 
@@ -1068,6 +1086,8 @@ $ git branch -D work # remove my temporary branch
 
 > Surely there has to be a better way! With `stg` I can queue up both patches and then re-apply them in whatever order I like, for independent or combined testing, etc. Here’s how I’d queue the same two patches from the previous example, using `stg`:
 
+但是应该会有更好的方法. 使用 `stg` 命令, 我可以对两个 patch 进行任意顺序的排序, 然后按这个顺序来应用它. 这样就可以进行独立测试/组合测试了. 以下是一个例子:
+
 
 
 ```bash
@@ -1080,7 +1100,11 @@ $ stg refresh --index
 ```
 
 
+
+
 > Now if I want to selectively disable the first patch to test only the second, it’s very straightforward:
+
+那么完成上面说的事情就非常简单了:
 
 
 
@@ -1102,6 +1126,7 @@ $ stg commit -a  # commit all the patches
 
 > This is definitely easier than creating temporary branches and using `cherry-pick` to apply specific commit ids, followed by deleting the temporary branch.
 
+这比上面提到的建立临时分支, 后面再把他删掉的方式舒服多了.
 
 
 
