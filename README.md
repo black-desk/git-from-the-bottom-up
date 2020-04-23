@@ -1153,7 +1153,7 @@ $ stg commit -a  # commit all the patches
 
 
 
-### 3.2 Doing a mixed reset | 应用一个 mixed reset
+### 3.2 Doing a mixed reset | Mixed reset
 
 
 
@@ -1170,9 +1170,14 @@ $ git add foo.c  # made a mistake, add it back
 ```
 
 
-### 3.3 Doing a soft reset
+
+### 3.3 Doing a soft reset | Soft reset
+
+
 
 > If you use the `--soft` option to `reset`, this is the same as simply changing your HEAD reference to a different commit. Your working tree changes are left untouched. This means the following two commands are equivalent:
+
+如果你加上了 `--soft` 选项, 那么这个 `reset` 命令就非常的简单易懂了: 实际上和你直接把你的 `HEAD` 指针指向了另一个不同的 commit 没什么两样. 你的 working tree 中的所有更改都会在执行完 reset 之后原样保留. 这意味着下面写的两条命令是完全等价的:
 
 
 
@@ -1186,32 +1191,57 @@ $ git update-ref HEAD HEAD^  # does the same thing, albeit manually
 
 > In both cases, your working tree now sits on top of an older HEAD, so you should see more changes if you run `status`. It’s not that your files have been changed, simply that they are now being compared against an older version. It can give you a chance to create a new commit in place of the old one. In fact, if the commit you want to change is the most recent one checked in, you can use `commit --amend` to add your latest changes to the last commit as if you’d done them together.
 
+在上述的两种情况里, 运行完 `reset` 之后, 你的 working tree 中的文件内容是领先于你的 HEAD 的, 所以如果你运行 `status` 命令来查看变更的情况, 你会看到的实际上是你的 working tree 和一个更老的 HEAD 的差别. 这使得你可以在老的 HEAD 上重新建立一个新的 commit, 事实上 `commit --amend` 这个命令做的事情就是类似于这样的.
+
 > But please note: if you have downstream consumers, and they’ve done work on top of your previous head — the one you threw away — changing HEAD like this will force a merge to happen automatically after their next pull. Below is what your tree would look like after a soft reset and a new commit:
 
+但是请注意一下: 如果你有下游用户, 而他们使用了被你 `reset` + `commit` 之后丢弃掉的那个 `commit` 的话, 那么像这样去更改你的 HEAD, 将会在他们的下一个 pull 时导致一个自动出现的强制 merge. 下图是你的 repository 在执行完 soft reset 之后又提交了一个新的 commit 之后的样子:
 
 
-![Soft Reset Commit](../images/soft-reset-commit.png)
+
+![Soft Reset Commit](https://jwiegley.github.io/git-from-the-bottom-up/images/soft-reset-commit.png)
 
 
 
 > And here’s what your consumer’s HEAD would look like after they pulled again, with colors to show how the various commits match up:
 
-
-
-### 3.4 Doing a hard reset
+而下图是你的下游用户下一次 pull 之后的情况:
 
 
 
-> A hard reset (the `--hard` option) has the potential of being very dangerous, as it’s able to do two different things at once: First, if you do a hard reset against your current HEAD, it will erase all changes in your working tree, so that your current files match the contents of HEAD.
+![Soft Reset Pull](https://jwiegley.github.io/git-from-the-bottom-up/images/soft-reset-pull.png)
+
+
+
+可以从其中给 commit 上的颜色看出来这些 commit 是如何对应的.
+
+
+
+### 3.4 Doing a hard reset | Hard reset
+
+
+
+> A hard reset (the `--hard` option) has the potential of being very dangerous, as it’s able to do two different things at once: 
+
+hard reset 操作起来有一定的风险, 它能同时完成两件不同的事情: 
+
+> First, if you do a hard reset against your current HEAD, it will erase all changes in your working tree, so that your current files match the contents of HEAD.
+
+首先, 如果你对你当前的 HEAD 做 hard reset, 这将从你的 working tree 中抹去所有的更改, 这样一来你的 working tree 就和你的 HEAD 指向的那个 commit 完全一致了.
 
 > There is also another command, `checkout`, which operates just like `reset --hard` if the index is empty. Otherwise, it forces your working tree to match the index.
 
+如果你的 index 是空的的话, 其实还有一个命令叫 `checkout` 同样能做到这个事情. 如果你的 index 不空, 那么对某个文件进行 checkout 命令只会使得 working tree 中的文件和 index 中一致.
+
 > Now, if you do a hard reset against an earlier commit, it’s the same as first doing a soft reset and then using reset `--hard` to reset your working tree. Thus, the following commands are equivalent:
+
+如果你对一个之前的 commit 调用 reset 命令, 那么这个事情和先使用 soft reset 之后再使用 hard reset 来重置你的工作区是完全一致的. 所以说下面的两组命令是等价的:
 
 
 
 ```bash
 $ git reset --hard HEAD~3  # Go back in time, throwing away changes
+
 $ git reset --soft HEAD~3  # Set HEAD to point to an earlier commit
 $ git reset --hard  # Wipe out differences in the working tree
 ```
@@ -1219,6 +1249,8 @@ $ git reset --hard  # Wipe out differences in the working tree
 
 
 > As you can see, doing a hard reset can be very destructive. Fortunately, there is a safer way to achieve the same effect, using the Git stash (see the next section):
+
+读过以上的内容, 我们可以发现: 一个 hard reset 很可能是具有破环性的. 幸运的是, 我们实际上有一种更安全的方法来完成同样的事情, 只要使用下一节中提到的 Git stash 命令就可以了:
 
 
 
@@ -1231,10 +1263,17 @@ $ git checkout -b new-branch HEAD~3   # head back in time!
 
 > This approach has two distinct advantages if you’re not sure whether you really want to modify the current branch just now:
 
+当你并不确定你是否要对当前的分支进行修改的时候, 这种方法有两个明显的优点: 
+
 > 1. It saves your work in the stash, which you can come back to at any time. Note that the stash is not branch specific, so you could potentially stash the state of your tree while on one branch, and later apply the differences to another.
 > 2. It reverts your working tree back to a past state, but on a new branch, so if you decide to commit your changes against the past state, you won’t have altered your original branch.
 
+1. 这样可以将你的工作保存在 stash 中, 你随时可以再回到你原来的工作状态. 需要注意的是这个 stash 和分支无关, 你完全可以在某个分支上将你当前的 working tree 存入, 而随后在另一个分支上取出它.
+2. 这样操作的确将代码回退到了过去的状态, 但是是在一个新的分支上, 如果你决定在过去的状态上修改, 这并不会影响到你原先那个更快的分支.
+
 > If you do make changes to `new-branch` and then decide you want it to become your new master branch, run the following commands:
+
+如果你对 new-branch 做出了更改, 然后想让它成为你新的主分支, 可以运行以下的命令来完成这件事情:
 
 
 
@@ -1247,7 +1286,13 @@ $ git branch -m new-branch master  # the new-branch is now my master
 
 > The moral of this story is: although you can do major surgery on your current branch using `reset --soft` and `reset --hard` (which changes the working tree too), why would you want to? Git makes working with branches so easy and cheap, it’s almost always worth it to do your destructive modifications on a branch, and then move that branch over to take the place of your old master. It has an almost Sith-like appeal to it...
 
+以上的事情是在告诉你: 尽管你是可以用 reset --soft 和 reset --hard 命令来操作你当前的分支,但是你几乎没有理由必须在你当前的分支上这么做. Git 让分支相关的操作变得简洁而容易, 所以我们往往都将可能有破坏性的操作放在另一个分支上操作, 完成以后再移动回来, 这种操作方式几乎在任何情况下都比直接在原分支上修改更为优秀. *
+
+[ 译者注: 最后一句貌似是个星战梗, 不知道啥意思. Sith 是西斯, 星战的反派. ]
+
 > And what if you do accidentally run `reset --hard`, losing not only your current changes but also removing commits from your master branch? Well, unless you’ve gotten into the habit of using stash to take snapshots (see next section), there’s nothing you can do to recover your lost working tree. But you can restore your branch to its previous state by again using `reset --hard` with the reflog (this will also be explained in the next section):
+
+那么如果你不小心运行了 hard reset, 然后同时丢失了你当前的更改和之前的一部分 commit 有办法弥补么? 除非你已经养成了使用 stash 来建立快照, 否则几乎没有办法来挽回这种情况对于 working tree 带来的损失, 但是你可以将你的分支回溯到它之前的那个状态. 只要像下面这样使用 `reset --hard` 这个命令就可以了:
 
 
 
@@ -1257,9 +1302,15 @@ $ git reset --hard HEAD@{1}   # restore from reflog before the change
 
 
 
+下一节我们来解释上面这条命令的意思.
+
+
+
 > To be on the safe side, never use `reset --hard` without first running `stash`. It will save you many white hairs later on. If you did run stash, you can now use it to recover your working tree changes as well:
 
+为了安全起见, 我们不应该在运行 `stash` 之前使用 `reset --hard`. 这个习惯将让你少掉几根头发. 如果你跑过 `stash`, 你实际上就可以使用它来还原你的 working tree:
 
+ 
 
 ```bash
 $ git stash  # because it's always a good thing to do
@@ -1269,13 +1320,12 @@ $ git stash apply  # and bring back my working tree changes
 ```
 
 
-![Soft Reset Pull](../images/soft-reset-pull.png)
-
-
 
 
 
 ## 4 Stashing and the reflog
+
+
 
 
 
