@@ -8,6 +8,12 @@
 
 
 
+如果真有人看, 还发现了什么错误, 欢迎提 issue, 欢迎 pr.
+
+为了保持整个文章在一个文件里面所以我并没有单独保存图片文件, 引用了原文的图片链接, 只要原文不挂应该问题就不大.
+
+
+
 This text is licensed under Creative Commons BY 4.0. Please see the text of that license here:
 
 https://creativecommons.org/licenses/by/4.0/legalcode
