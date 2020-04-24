@@ -4,8 +4,13 @@
 
 这是一个 [git from the bottom up](https://jwiegley.github.io/git-from-the-bottom-up/) 的中文翻译.
 
-
 由于译者水平有限, 保留了英文, 防止误解.
+
+
+
+This text is licensed under Creative Commons BY 4.0. Please see the text of that license here:
+
+https://creativecommons.org/licenses/by/4.0/legalcode
 
 
 
@@ -1323,7 +1328,7 @@ $ git stash apply  # and bring back my working tree changes
 
 
 
-## 4 Stashing and the reflog
+## 4 Stashing and the reflog | Stash 和 reflog
 
 
 
@@ -1331,7 +1336,16 @@ $ git stash apply  # and bring back my working tree changes
 
 > Until now we’ve described two ways in which blobs find their way into Git: first they’re created in your index, both without a parent tree and without an owning commit; and then they’re committed into the repository, where they live as leaves hanging off of the tree held by that commit. But there are two other ways a blob can dwell in your repository.
 
+直到现在我们描述过两种在 Git 中找到某个 blob 的方法:
+
+1. 当 blob 在你的 index 中被创建时, 此时还没有一个 tree 在引用它们, 它们也没有被某个 commit 所拥有, 这时我们可以通过 index 来找到它;
+2. 随后它们被提交给你的 repository, 之后 blob 就成为了 被某个 commit 管理的 tree 上的叶节点.
+
+但是实际上在 Git 中还有两种 blob 存在的形式.
+
 > The first of these is the Git `reflog`, a kind of meta-repository that records — in the form of commits — every change you make to your repository. This means that when you create a tree from your index and store it under a commit (all of which is done by `commit`), you are also inadvertently adding that commit to the reflog, which can be viewed using the following command:
+
+第一种就是 Git `reflog`, 这是一种以 commit 的方式记录了所有你对你的 repository 做出的更改的 meta-repository. 这意味着当你从一个 index 建立一个 tree, 并且将它存在一个 commit 中的时候, 你实际上无意之中也将这个 commit 添加到了 the reflog 中. 你可以通过以下的命令查看 the reflog:
 
 
 
@@ -1344,7 +1358,13 @@ $ git reflog
 
 > The beauty of the reflog is that it persists independently of other changes in your repository. This means I could unlink the above commit from my repository (using `reset`), yet it would still be referenced by the reflog for another 30 days, protecting it from garbage collection. This gives me a month’s chance to recover the commit should I discover I really need it.
 
+the reflog 的妙处就在于它与其他你对你的 repository 做出的更改是独立的. 这意味着当我将上面的命令展示的那个 commit 从我的 repository 中解除链接的时候 (比方说我跑了一个 `reset`), 这个 commit 仍然被这个 meta-repository, 也就是 the reflog 所引用, 直到 30 天以后, 这个 commit 才会进入垃圾回收系统的考虑范围. 这使得你有一个月的时间来找回你需要的 commit.
+
+
+
 > The other place blobs can exist, albeit indirectly, is in your working tree itself. What I mean is, say you’ve changed a file `foo.c` but you haven’t added those changes to the index yet. Git may not have created a blob for you, but those changes do exist, meaning the content exists — it just lives in your filesystem instead of Git’s repository. The file even has its own SHA1 hash id, despite the fact no real blob exists. You can view it with this command:
+
+尽管很显然, 但是实际上还有一个地方是 blob 可以呆的, 那就是你的 working tree. 我的意思是说, 如果你更改了一个文件, 比如说 `foo.c` 但是还没有将这个更改添加到 the index 中, 那么由于我们说 blob 的本质是数据本身, 所以即使 Git 并没有建立对应的 blob, 数据本身也仍然是存在的, 只不过是存在于你的文件系统中罢了. 这个文件本身实际上是有 SHA1 值的, 尽管其实并没有实际上的 blob 存在. 我们可以通过下面这条命令来查看它:
 
 
 
@@ -1357,6 +1377,8 @@ $ git hash-object foo.c
 
 > What does this do for you? Well, if you find yourself hacking away on your working tree and you reach the end of a long day, a good habit to get into is to stash away your changes:
 
+这意味着啥呢? 如果你在你的 working tree 中到处乱改, 然后经过了漫长的一整天工作, 将所有的更改都用 stash 存起来会是一个好习惯:
+
 
 
 ```bash
@@ -1367,7 +1389,11 @@ $ git stash
 
 > This takes all your directory’s contents — including both your working tree, and the state of the index — and creates blobs for them in the git repository, a tree to hold those blobs, and a pair of stash commits to hold the working tree and index and record the time when you did the stash.
 
+这个命令将你的那个目录中的所有内容 — 包括你的 working tree, 甚至是 the index 的状态 — 都保存了下来, 并且为它们在 Git repository 中创建了 blob, 以及一个 tree 来管理这些 blob, 还有一对 stash commit 来管理你的 working tree 和 index 还得记录下你执行 stash 命令的时间.
+
 > This is a good practice because, although the next day you’ll just pull your changes back out of the stash with `stash apply`, you’ll have a reflog of all your stashed changes at the end of every day. Here’s what you’d do after coming back to work the next morning (WIP here stands for “Work in progress”):
+
+尽管你第二天会把所有的更改都用 `stash apply` 命令从 stash 中重新拉出来, 但是做完这件事情之后你相当于在 reflog 中存了一个你每天工作的结果的快照. 第二天你回来工作的时候需要做的事情如下:
 
 
 
@@ -1382,7 +1408,11 @@ $ git stash apply
 
 
 
+其中WIP意味着 "Work in progress"
+
 > Because your stashed working tree is stored under a commit, you can work with it like any other branch — at any time! This means you can view the log, see when you stashed it, and checkout any of your past working trees from the moment when you stashed them:
+
+因为你已经把 working tree 存在了一个 commit 里面, 所以你任何时候都实际上可以把他当作一个分支一样来看待. 这意味着你甚至可以查看日志, 可以看你 stash 的时间, 以及将你过去存进 stash 的 working tree 重新取出:
 
 
 
@@ -1400,7 +1430,13 @@ $ git checkout -b temp stash@{32}  # let’s see that old working tree!
 
 > This last command is particularly powerful: behold, I’m now playing around in an uncommitted working tree from over a month ago. I never even added those files to the index; I just used the simple expedient of calling `stash` before logging out each day (provided you actually had changes in your working tree to stash), and used `stash apply` when I logged back in.
 
+最后那个命令其实非常的有用: 你看, 我可以把一个月前没有 commit 的 working tree 重新拿出来玩. 我甚至从来没有把这些文件添加到 the index 中; 只不过是在我每天下班关机之前运行了一次 `stash` 命令而已. 然后第二天上班的时候, 只要 `stash apply` 就行了. 
+
 > If you ever want to clean up your stash list — say to keep only the last 30 days of activity — don’t use `stash clear`; use the `reflog expire` command instead:
+
+但是如果你什么时候想清理你的 stash 列表了, 比方说想把 30 天之前的 stash 的历史删掉 *, 那么麻烦不要使用 `stash clear` — 那样你将会丢失所有 stash 中的历史; 而应该使用 `reflog expire` 命令: 
+
+[ 译者注: 这里按前文的说法, stash 的历史也一样是由 reflog 保存的, 那么 reflog 本身只会保存 30 天历史, 所以这里手动清理应该没什么意义吧, 除非只是希望手动完成一下垃圾回收器完成的事情? ] 
 
 
 
@@ -1413,6 +1449,8 @@ $ git reflog expire --expire=30.days refs/stash
 
 
 > The beauty of `stash` is that it lets you apply unobtrusive version control to your working process itself: namely, the various stages of your working tree from day to day. You can even use `stash` on a regular basis if you like, with something like the following `snapshot` script:
+
+`stash` 的妙处就在于让你可以做一些不那么刻意的版本控制, 比如说像上面那样每天保存一下工作进度. 你愿意的话甚至可以定期的运行 `stash`, 比如通过下面这样的脚本:
 
 
 
@@ -1429,18 +1467,28 @@ $ git-snapshot
 
 > There’s no reason you couldn’t run this from a `cron` job every hour, along with running the `reflog expire` command every week or month.
 
+没有什么理由能阻止你使用 `cron` 来每个小时跑一次这个命令, 如果担心仓库太大, 完全可以同时每个月或者每周跑 `reflog expire`.
 
 
 
 
 
-## 5 Conclusion
+
+## 5 Conclusion | 结论
+
+
 
 
 
 > Over the years I’ve used many version control systems, and many backup schemes. They all have facilities for retrieving the past contents of a file. Most of them have ways to show how a file has differed over time. Many permit you to go back in time, begin a divergent line of reasoning, and then later bring these new thoughts back to the present. Still fewer offer fine-grained control over that process, allowing you to collect your thoughts however you feel best to present your ideas to the public. Git lets you do all these things, and with relative ease — once you understand its fundamentals.
 
+在过去的几年中我使用过非常多的版本控制系统, 以及很多种的备份模式. 它们都有一系列工具来追回过去文件的内容. 大部分工具都有展示一个文件随着时间发展如何一步步被更改的的方式. 很多工具都可以让你穿越时间回到过去, 让你在过去做一些尝试, 然后把产生的想法重新带回现在. 还是有很小一部分提供了对这个过程的良好的控制机制, 让你可以良好的操作过去的历史, 可以以任意你喜欢的方式整理好你的想法, 然后将它展示给公众. Git 可以让你做到上述的一切. 甚至相对来说还是比较容易地做到这一切 — 只要你真的搞懂了 Git 的原理.
+
+
+
 > It’s not the only system with this kind of power, nor does it always employ the best interface to its concepts. What it does have, however, is a solid base to work from. In the future, I imagine many new methods will be devised to take advantage of the flexibilities Git allows. Most other systems have led me to believe they’ve reached their conceptual plateau — that all else from now will be only a slow refinement of what I’ve seen before. Git gives me the opposite impression, however. I feel we’ve only begun to see the potential its deceptively simple design promises.
+
+这不是唯一一个有这些能力的系统, 它也没有对于它的理念提供最好的交互. 但是 Git 拥有的这些东西, 却的的确确是一个进一步开发的好基础. 在未来, 我可以预想存在着很多更好的工具被发明出来, 它们能更好地利用 Git 类似的构造提供的这种种便利. 其他的大部分系统都让我相信它们到达了他们的瓶颈期 — 它们要不然就像我之前见到的那样在慢慢慢慢地进行改进, 要不然将来也会进入这样的状态. Git 却给了我一个更为乐观的印象. 我感觉我们即将见识到它出乎人意料的简单的涉及理念中爆发出来的潜力.
 
 
 
@@ -1452,10 +1500,12 @@ $ git-snapshot
 
 > If your interest to learn Git more has been piqued, please check out the following articles:
 
+如果你还想学一些 Git 可以看看下面这些文章:
+
 > * A tour of Git: the basics - [http://cworth.org/hgbook-git/tour/](http://cworth.org/hgbook-git/tour/)
- * Manage source code using Git - [http://www.ibm.com/developerworks/linux/library/l-git/](http://www.ibm.com/developerworks/linux/library/l-git/)
- * A tutorial introduction to git - [http://git-scm.com/docs/gittutorial](http://git-scm.com/docs/gittutorial)
- * GitFaq — GitWiki - [https://git.wiki.kernel.org/index.php/GitFaq](https://git.wiki.kernel.org/index.php/GitFaq)
- * A git core tutorial for developers - [http://www.kernel.org/pub/software/scm/git/docs/gitcore-tutorial.html](https://www.kernel.org/pub/software/scm/git/docs/gitcore-tutorial.html)
- * git for the confused - [http://www.gelato.unsw.edu.au/archives/git/0512/13748.html](http://www.gelato.unsw.edu.au/archives/git/0512/13748.html)
- * The thing About Git - [http://tomayko.com/writings/the-thing-about-git](http://tomayko.com/writings/the-thing-about-git)
+> * Manage source code using Git - [http://www.ibm.com/developerworks/linux/library/l-git/](http://www.ibm.com/developerworks/linux/library/l-git/)
+> * A tutorial introduction to git - [http://git-scm.com/docs/gittutorial](http://git-scm.com/docs/gittutorial)
+>  * GitFaq — GitWiki - [https://git.wiki.kernel.org/index.php/GitFaq](https://git.wiki.kernel.org/index.php/GitFaq)
+>  * A git core tutorial for developers - [http://www.kernel.org/pub/software/scm/git/docs/gitcore-tutorial.html](https://www.kernel.org/pub/software/scm/git/docs/gitcore-tutorial.html)
+>  * git for the confused - [http://www.gelato.unsw.edu.au/archives/git/0512/13748.html](http://www.gelato.unsw.edu.au/archives/git/0512/13748.html)
+>  * The thing About Git - [http://tomayko.com/writings/the-thing-about-git](http://tomayko.com/writings/the-thing-about-git)
