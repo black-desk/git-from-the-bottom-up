@@ -1236,13 +1236,9 @@ $ git update-ref HEAD HEAD^  # does the same thing, albeit manually
 
 hard reset 操作起来有一定的风险, 它能同时完成两件不同的事情: 
 
-> First, if you do a hard reset against your current HEAD, it will erase all changes in your working tree, so that your current files match the contents of HEAD.
+> First, if you do a hard reset against your current HEAD, it will erase all changes in your working tree, so that your current files match the contents of HEAD. There is also another command, `checkout`, which operates just like `reset --hard` if the index is empty. Otherwise, it forces your working tree to match the index.
 
-首先, 如果你对你当前的 HEAD 做 hard reset, 这将从你的 working tree 中抹去所有的更改, 这样一来你的 working tree 就和你的 HEAD 指向的那个 commit 完全一致了.
-
-> There is also another command, `checkout`, which operates just like `reset --hard` if the index is empty. Otherwise, it forces your working tree to match the index.
-
-如果你的 index 是空的的话, 其实还有一个命令叫 `checkout` 同样能做到这个事情. 如果你的 index 不空, 那么对某个文件进行 checkout 命令只会使得 working tree 中的文件和 index 中一致.
+首先, 如果你对你当前的 HEAD 做 hard reset, 这将从你的 working tree 中抹去所有的更改, 这样一来你的 working tree 就和你的 HEAD 指向的那个 commit 完全一致了. 如果你的 index 是空的的话, 其实还有一个命令叫 `checkout` 同样能做到这个事情. 如果你的 index 不空, 那么对某个文件进行 checkout 命令只会使得 working tree 中的文件和 index 中一致.
 
 > Now, if you do a hard reset against an earlier commit, it’s the same as first doing a soft reset and then using reset `--hard` to reset your working tree. Thus, the following commands are equivalent:
 
