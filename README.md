@@ -72,9 +72,9 @@ https://creativecommons.org/licenses/by/4.0/legalcode
 
 > * **commit** — A **commit** is a snapshot of your working tree at some point in time. The state of HEAD (see below) at the time your commit is made becomes that commit’s parent. This is what creates the notion of a “revision history”.
 
-* **commit** — **commit** 是某个时间点上你的 working tree 的一个快照<sup>*</sup>. 当你提交一个 commit 的时候, HEAD 指向的 commit 会成为你提交的 commit 的父 commit. 这个机制让我们得以追溯修改的历史.
+* **commit** — **commit** 是某个时间点上你的 working tree 的一个快照[^fn1]. 当你提交一个 commit 的时候, HEAD 指向的 commit 会成为你提交的 commit 的父 commit. 这个机制让我们得以追溯修改的历史.
 
-[ 译者注: 这个描述貌似和上面对 working tree 的描述有冲突, 上面对 working tree 的说法是 working tree 包含了 `.git` 子目录,但是出于译者对 commit 的认识而言, commit 中应该没有 `.git` 中的相关信息. 这里可以尝试理解为文中说的 working tree 是类似工作区的概念, 并不包括 `.git` 子目录 ]
+[^fn1]: 译者注: 这个描述貌似和上面对 working tree 的描述有冲突, 上面对 working tree 的说法是 working tree 包含了 `.git` 子目录,但是出于译者对 commit 的认识而言, commit 中应该没有 `.git` 中的相关信息. 这里可以尝试理解为文中说的 working tree 是类似工作区的概念, 并不包括 `.git` 子目录.
 
 
 
@@ -84,9 +84,9 @@ https://creativecommons.org/licenses/by/4.0/legalcode
 
 > * **branch** — A **branch** is just a name for a commit (and much more will be said about commits in a moment), also called a reference. It’s the parentage of a commit which defines its history, and thus the typical notion of a “branch of development”.
 
-* **branch** — **branch** 只是某个的 commit 的别名<sup>*</sup>, 也可以认为是一个引用. 它是一个 commit 的来历, 记录着我们是如何到达这个 commit 的. 这很好地体现了分支开发的理念.
+* **branch** — **branch** 只是某个的 commit 的别名[^fn2], 也可以认为是一个引用. 它是一个 commit 的来历, 记录着我们是如何到达这个 commit 的. 这很好地体现了分支开发的理念.
 
-[ 译者注: 这个地方括号中的内容不知道怎么翻译, 可以理解为, "我们还有很多关于 commit 的东西马上就要谈到", 但是感觉和上下文不搭. ]
+[^fn2]: 译者注: 这个地方括号中的内容不知道怎么翻译, 可以理解为, "我们还有很多关于 commit 的东西马上就要谈到", 但是感觉和上下文不搭.
 
 
 
@@ -192,9 +192,9 @@ Git 中的 blob 和文件系统中的文件的一大区别就是 blob 中并没�
 
 > In a normal filesystem, two files with the same contents but with such different metadata would always be represented as two independent files. Why this difference? Mainly, it’s because a filesystem is designed to support files that change, whereas Git is not. The fact that data is immutable in the Git repository is what makes all of this work and so a different design was needed. And as it turns out, this design allows for much more compact storage, since all objects having identical content can be shared, no matter where they are.
 
-通常来说, 在文件系统中, 两个内容一样却有不一样的元数据的文件总是会被当作是两个独立的文件. 为什么会有这种不同呢? 基本上我们可以认为这是因为文件系统主要是为了会变化的文件设计的, 而 Git 并不是, 我们反而是希望在 Git 中被存下来的快照不会发生变化的. 实际上这种设计甚至可以用来压缩存储空间, 因为它允许两个有相同内容的文件共享空间<sup>*</sup>.
+通常来说, 在文件系统中, 两个内容一样却有不一样的元数据的文件总是会被当作是两个独立的文件. 为什么会有这种不同呢? 基本上我们可以认为这是因为文件系统主要是为了会变化的文件设计的, 而 Git 并不是, 我们反而是希望在 Git 中被存下来的快照不会发生变化的. 实际上这种设计甚至可以用来压缩存储空间, 因为它允许两个有相同内容的文件共享空间[^fn3].
 
-[ 译者注: 有理由相信 github 可以用这个方式来省钱, 这样 fork 出来的 repository 就不会那么占空间了. ]
+[^fn3]: 译者注: 有理由相信 github 可以用这个方式来省钱, 这样 fork 出来的 repository 就不会那么占空间了.
 
 
 
@@ -232,9 +232,9 @@ af5626b4a114abcb82d63db7c8082c3c4756e51b
 
 > If you run this command on your system, you’ll get the same hash id. Even though we’re creating two different repositories (possibly a world apart, even) our greeting blob in those two repositories will have the same hash id. I could even pull commits from your repository into mine, and Git would realize that we’re tracking the same content — and so would only store one copy of it! Pretty cool.
 
-如果你也在你的机子上跑了这条命令,你一定会和我得到一个同样的哈希值. 虽然我们甚至可能不在同一个位面 :smirk:<sup>*</sup>, 在两个不同的 repository 中, 同样的内容还是有同样的哈希值. 我甚至可以从你的 repository 中 pull 一些 commit 到我这里来, 如果我真的那么做了, Git 也会认识到我们两个人是在跟踪同样的一个内容 — 所以它也只会存储一份数据. 这真的很棒!
+如果你也在你的机子上跑了这条命令,你一定会和我得到一个同样的哈希值. 虽然我们甚至可能不在同一个位面[^fn4], 在两个不同的 repository 中, 同样的内容还是有同样的哈希值. 我甚至可以从你的 repository 中 pull 一些 commit 到我这里来, 如果我真的那么做了, Git 也会认识到我们两个人是在跟踪同样的一个内容 — 所以它也只会存储一份数据. 这真的很棒!
 
-[ 译者注: 这个地方我皮了一下, 但是实际上我并不确定原文是不是这个意思 ]
+[^fn4]: 译者注: 这个地方我皮了一下, 但是实际上我并不确定原文是不是这个意思.
 
 
 
@@ -308,9 +308,9 @@ $ git ls-tree HEAD
 
 > Although I can look at the tree containing my blob by passing HEAD to `ls-tree`, I haven’t yet seen the underlying tree object referenced by that commit. Here are a few other commands to highlight that difference and thus discover my tree:
 
-尽管我可以通过向 `ls-tree` 这个命令传入 HEAD 来查看那个含有我的 blob 的 tree, 但是我还没从底层看到过那个被 commit 引用的 tree 对象. 这里有几个命令能说明这两者有什么不同<sup>*</sup>, 我们来看看:
+尽管我可以通过向 `ls-tree` 这个命令传入 HEAD 来查看那个含有我的 blob 的 tree, 但是我还没从底层看到过那个被 commit 引用的 tree 对象. 这里有几个命令能说明这两者有什么不同[^fn5], 我们来看看:
 
-[ 译者注: 最后这句话的翻译不确定是否正确 ]
+[^fn5]: 译者注: 最后这句话的翻译不确定是否正确.
 
 
 
@@ -489,9 +489,9 @@ $ git update-ref refs/heads/master 5f1bc857
 
 > After creating `master`, we must associate our working tree with it. Normally this happens for you whenever you check out a branch:
 
-在创建<sup>*</sup>完 master 之后,我们必须将我们的 working tree 调整成和 master 相匹配的样子. 一般来说, 这个操作是用于 check out 一个分支的:
+在创建[^fn6]完 master 之后,我们必须将我们的 working tree 调整成和 master 相匹配的样子. 一般来说, 这个操作是用于 check out 一个分支的:
 
-[译者注: 这个时候真的还没有 "master" 这个分支么? 为什么可以说是 create 呢? ]
+[^fn6]: 译者注: 这个时候真的还没有 "master" 这个分支么? 为什么可以说是 create 呢?
 
 
 
@@ -652,13 +652,13 @@ $ git checkout 5f1bc85
 
 接下来的几条中的 "name" 可以使用上文提到的所有可以找到 commit 的字符串替换, 以下是一些相对某个 commit 查询另一个 commit 的方法:
 
-* **name^** —  `^` 这个符号可以找到一个 commit 的父 commit,  如果这个 commit 有多个父 commit 那么查询的结果是第一个<sup>*</sup>.
+* **name^** —  `^` 这个符号可以找到一个 commit 的父 commit,  如果这个 commit 有多个父 commit 那么查询的结果是第一个[^fn7].
 
-[ 译者注: 这里的 "first" 是按提交 commit 的时间排序的么? ]
+[^fn7]: 译者注: 这里的 "first" 是按提交 commit 的时间排序的么?
 
-* **name^^** — `^` 这个符号是可以被连续的调用的<sup>*</sup> , 这意味着你寻找的是当前 commit 的爷爷.
+* **name^^** — `^` 这个符号是可以被连续的调用的[^fn8], 这意味着你寻找的是当前 commit 的爷爷.
 
-[ 译者注: 毕竟你可以将 "name^" 看作是一个 "name" 嘛 ]
+[^fn8]: 译者注: 毕竟你可以将 "name^" 看作是一个 "name" 嘛.
 
 * **name^2** — 如果一个 commit 有多个父 commit — 比方说一个 merge commit — 那么如果你想找其中的第 n 个父 commit, 可以使用 `name^n`.
 * **name~10** — 这意味着一个 commit 十代之前的那个祖宗, 第 n 代祖先,可以通过一个 `~` 符号后面跟着一个数字来找到. 这一般是用于执行 `rebase -i` 命令的时候用的. 效果和 name^^^^^^^^^^ 是完全一致的.
@@ -762,9 +762,9 @@ $ git show-branch
 
 > Reading this output takes a little getting used to, but essentially it’s no different from the diagram above. Here’s what it tells us:
 
-阅读这个输出需要我们花一点时间来习惯它, 但是它实际上给出的信息和上面那张示意图没有什么区别. 以下是这个输出的阅读方法<sup>*</sup>:
+阅读这个输出需要我们花一点时间来习惯它, 但是它实际上给出的信息和上面那张示意图没有什么区别. 以下是这个输出的阅读方法[^fn9]:
 
-[ 译者注: 实际上这些内容可以在命令 `git help show-branch` 中看到. ]
+[^fn9]: 译者注: 实际上这些内容可以在命令 `git help show-branch` 中看到.
 
 
 
@@ -842,9 +842,17 @@ $ git rebase D # change Z’s base commit to point to D
 
 > Why is this only for local branches? Because every time you rebase, you’re potentially changing every commit in the branch. Earlier, when `W` was based on ` A`, it contained only the changes needed to transform `A` into `W`. After running rebase, however, `W` will be rewritten to contain the changes necessary to transform `D` into `W’`. Even the transformation from `W` to `X` is changed, because `A+W+X` is now `D+W’+X’` — and so on. If this were a branch whose changes are seen by other people, and any of your downstream consumers had created their own local branches off of `Z`, their branches would now point to the old `Z`, not the new `Z’`.
 
-为什么我们说这种操作只能对本地分支进行呢? 这是因为每当运行 `rebase` 命令的时候, 我们实际上将分支中的每一个 commit 都进行了更改. 之前的 `W` 是基于 `A` 做出的修改, 如果我们认为一个 commit 中只包含更改的信息的话<sup>*</sup>, 那么 `W` 实际上只含有 "从 `A` 变成 `W`" 做出的变化. 但是运行完 `rebase` 之后, `W` 实际上就包含了从 `D` 变成 `W'` 产生的变化. 以及 `W` 和 `X` 之间的更改都产生了改变, 因为原来的 `A+W+X` 现在是 `D+W'+X'` — 其他的 commit 也有类似的变化. 如果这样的一个分支中的更改对于其他人来说是可见的, 以及从你的 repository 中获得源代码的下游人员中有人用原来的 `Z` 创建了新的分支, 那么他们的 `Z` 并不会指向 `rebase` 后的那个新 `Z`.
+为什么我们说这种操作只能对本地分支进行呢? 这是因为每当运行 `rebase` 命令的时候, 我们实际上将分支中的每一个 commit 都进行了更改. 之前的 `W` 是基于 `A` 做出的修改, 如果我们认为一个 commit 中只包含更改的信息的话[^fn10], 那么 `W` 实际上只含有 "从 `A` 变成 `W`" 做出的变化. 但是运行完 `rebase` 之后, `W` 实际上就包含了从 `D` 变成 `W'` 产生的变化. 以及 `W` 和 `X` 之间的更改都产生了改变, 因为原来的 `A+W+X` 现在是 `D+W'+X'` — 其他的 commit 也有类似的变化. 如果这样的一个分支中的更改对于其他人来说是可见的, 以及从你的 repository 中获得源代码的下游人员中有人用原来的 `Z` 创建了新的分支, 那么他们的 `Z` 并不会指向 `rebase` 后的那个新 `Z`.
 
- [ 译者注: 虽然实际上并不是这样, 因为每个 commit 中的 tree 都只是一个快照而已. 另外上面这段话我个人觉得可以这样理解: commit 是一个 object, 在 Git 中一个 object 的名字是由它的 SHA1 值来决定的, 而 SHA1 值是由内容决定的. 那么当我们说, 一个 commit 被改变的时候, 我们实际上想表达的意思是, 这个 commit 的 SHA1 值发生了变化, 也就是 commit 的内容发生了变化. 根据前文的说法我们知道, 一个 commit 中, 是包含有它的父 commit 的引用的, 如果一个 commit 的父 commit 被用 `rebase` 指令改掉了, 那么它本身的 SHA1 值是会发生变化的, 而它本身发生了变化之后, 所有直接或者间接引用了它的其他 commit 的值也都会因为这样的理由而发生变化 ]
+[^fn10]:
+
+    译者注: 虽然实际上并不是这样, 因为每个 commit 中的 tree 都只是一个快照而已.
+
+    另外上面这段话我个人觉得可以这样理解:
+
+    commit 是一个 object, 在 Git 中一个 object 的名字是由它的 SHA1 值来决定的, 而 SHA1 值是由内容决定的. 那么当我们说, 一个 commit 被改变的时候, 我们实际上想表达的意思是, 这个 commit 的 SHA1 值发生了变化, 也就是 commit 的内容发生了变化.
+
+    根据前文的说法我们知道, 一个 commit 中, 是包含有它的父 commit 的引用的, 如果一个 commit 的父 commit 被用 `rebase` 指令改掉了, 那么它本身的 SHA1 值是会发生变化的, 而它本身发生了变化之后, 所有直接或者间接引用了它的其他 commit 的值也都会因为这样的理由而发生变化.
 
 
 
@@ -961,9 +969,9 @@ $ git rebase -i Z
 
 > Between your data files, which are stored on the filesystem, and your Git blobs, which are stored in the repository, there stands a somewhat strange entity: the Git index. Part of what makes this beast hard to understand is that it’s got a rather unfortunate name. It’s an index in the sense that it refers to the set of newly created trees and blobs which you created by running add. These new objects will soon get bound into a new tree for the purpose of committing to your repository — but until then, they are only referenced by the index. That means that if you unregister a change from the index with reset, you’ll end up with an orphaned blob that will get deleted at some point at the future.
 
-在你的数据文件, 与 Git 中存储的 blob 之间还存在着一个奇怪的媒介, 我们称之为 the Git index. 这个令人困惑的名字使得它很难被人理解. 从某种意义上来讲, 它确实是一种索引: 它引用一个由新添加的 tree* 和 blob 组成的集合, 这个集合是用户通过运行 add 命令创建的. 在这些对象真正被添加到一个 tree, 并且最终成为一个 commit 加入到你的 repository 中之前, 这些新的对象, 它们仅仅只被 the index 引用而已. 这意味着如果你通过 reset 命令将一个被记录到 the index 中的更改撤销掉的话, 那么你原本新创建的 blob 会成为没有人引用的孤儿, 这种 blob 在未来的某个时间点会被删除.
+在你的数据文件, 与 Git 中存储的 blob 之间还存在着一个奇怪的媒介, 我们称之为 the Git index. 这个令人困惑的名字使得它很难被人理解. 从某种意义上来讲, 它确实是一种索引: 它引用一个由新添加的 tree[^fn11] 和 blob 组成的集合, 这个集合是用户通过运行 add 命令创建的. 在这些对象真正被添加到一个 tree, 并且最终成为一个 commit 加入到你的 repository 中之前, 这些新的对象, 它们仅仅只被 the index 引用而已. 这意味着如果你通过 reset 命令将一个被记录到 the index 中的更改撤销掉的话, 那么你原本新创建的 blob 会成为没有人引用的孤儿, 这种 blob 在未来的某个时间点会被删除.
 
-[ 译者注: 这里的 tree 指的是被新 commit 直接管理的那个 tree 的 sub-tree. ]
+[^fn11]: 译者注: 这里的 tree 指的是被新 commit 直接管理的那个 tree 的 sub-tree.
 
 
 
@@ -1045,9 +1053,9 @@ $ git commit -m "Second commit message"
 
 > If you’re thinking “Quilt!”, you’re exactly right. In fact, the index is little different from Quilt, it just adds the restriction of allowing only one patch to be constructed at a time.
 
-你很可能会想到一个叫 "[Quilt](https://en.wikipedia.org/wiki/Quilt_(software))" 的软件. 事实上, the index 和 Quilt 有一点点不同, Quilt 实际上只是添加了一个 "一次只允许对代码做出一个 patch 的更改" 的限定而已*.
+你很可能会想到一个叫 "[Quilt](https://en.wikipedia.org/wiki/Quilt_(software))" 的软件. 事实上, the index 和 Quilt 有一点点不同, Quilt 实际上只是添加了一个 "一次只允许对代码做出一个 patch 的更改" 的限定而已[^fn12].
 
-[ 译者注: 这里我并不确定是不是这个意思, 因为译者并没有使用过 Quilt, 这句是根据维基猜的, 主要是前面那个 it 不知道指的是谁. ]
+[^fn12]: 译者注: 这里我并不确定是不是这个意思, 因为译者并没有使用过 Quilt, 这句是根据维基猜的, 主要是前面那个 it 不知道指的是谁.
 
 > But what if, instead of two sets of changes within `foo.c`, I had four? With plain Git, I’d have to tease each one out, commit it, and then tease out the next. This is made much easier using the index, but what if I wanted to test those changes in various combinations with each other before checking them in? That is, if I labelled the patches A, B, C and D, what if I wanted to test A + B, then A + C, then A + D, etc., before deciding if any of the changes were truly complete?
 
@@ -1060,11 +1068,11 @@ $ git commit -m "Second commit message"
 
 在 Git 中并没有这样的功能. 多分支确实可以让你完成平行开发, the index 也确实可以让你将更改拆成若干个 commit, 但是实际上你并不能同时做这两个事情: 你不能暂存下一系列 commit 中的更改, 然后去选择其中一些出于启用/关闭的状态, 以此来在提交前验证更改的正确性.
 
-你实际上想做的事情是希望你的 the index 中, 可以存下多个 commit*, 这个功能实际上可以由 Stacked Git 来提供的.
+你实际上想做的事情是希望你的 the index 中, 可以存下多个 commit[^fn13], 这个功能实际上可以由 Stacked Git 来提供的.
 
 以下是我 commit 两个不同的更改组到我的 working tree 的过程:
 
-[ 译者注: 这里的意思应该是, 如果你的暂存区里有多个 commit, 那么你就可以把他们以任意的组合加到 repository 中, 然后就可以实现上面说的那个事情了. ]
+[^fn13]: 译者注: 这里的意思应该是, 如果你的暂存区里有多个 commit, 那么你就可以把他们以任意的组合加到 repository 中, 然后就可以实现上面说的那个事情了.
 
 
 
@@ -1292,9 +1300,9 @@ $ git branch -m new-branch master  # the new-branch is now my master
 
 > The moral of this story is: although you can do major surgery on your current branch using `reset --soft` and `reset --hard` (which changes the working tree too), why would you want to? Git makes working with branches so easy and cheap, it’s almost always worth it to do your destructive modifications on a branch, and then move that branch over to take the place of your old master. It has an almost Sith-like appeal to it...
 
-以上的事情是在告诉你: 尽管你是可以用 reset --soft 和 reset --hard 命令来操作你当前的分支,但是你几乎没有理由必须在你当前的分支上这么做. Git 让分支相关的操作变得简洁而容易, 所以我们往往都将可能有破坏性的操作放在另一个分支上操作, 完成以后再移动回来, 这种操作方式几乎在任何情况下都比直接在原分支上修改更为优秀. *
+以上的事情是在告诉你: 尽管你是可以用 reset --soft 和 reset --hard 命令来操作你当前的分支,但是你几乎没有理由必须在你当前的分支上这么做. Git 让分支相关的操作变得简洁而容易, 所以我们往往都将可能有破坏性的操作放在另一个分支上操作, 完成以后再移动回来, 这种操作方式几乎在任何情况下都比直接在原分支上修改更为优秀.[^fn14]
 
-[ 译者注: 最后一句貌似是个星战梗, 不知道啥意思. Sith 是西斯, 星战的反派. ]
+[^fn14]: 译者注: 最后一句貌似是个星战梗, 不知道啥意思. Sith 是西斯, 星战的反派.
 
 > And what if you do accidentally run `reset --hard`, losing not only your current changes but also removing commits from your master branch? Well, unless you’ve gotten into the habit of using stash to take snapshots (see next section), there’s nothing you can do to recover your lost working tree. But you can restore your branch to its previous state by again using `reset --hard` with the reflog (this will also be explained in the next section):
 
@@ -1435,9 +1443,9 @@ $ git checkout -b temp stash@{32}  # let’s see that old working tree!
 
 > If you ever want to clean up your stash list — say to keep only the last 30 days of activity — don’t use `stash clear`; use the `reflog expire` command instead:
 
-但是如果你什么时候想清理你的 stash 列表了, 比方说想把 30 天之前的 stash 的历史删掉 *, 那么麻烦不要使用 `stash clear` — 那样你将会丢失所有 stash 中的历史; 而应该使用 `reflog expire` 命令: 
+但是如果你什么时候想清理你的 stash 列表了, 比方说想把 30 天之前的 stash 的历史删掉[^fn15], 那么麻烦不要使用 `stash clear` — 那样你将会丢失所有 stash 中的历史; 而应该使用 `reflog expire` 命令: 
 
-[ 译者注: 这里按前文的说法, stash 的历史也一样是由 reflog 保存的, 那么 reflog 本身只会保存 30 天历史, 所以这里手动清理应该没什么意义吧, 除非只是希望手动完成一下垃圾回收器完成的事情? ] 
+[^fn15]: 译者注: 这里按前文的说法, stash 的历史也一样是由 reflog 保存的, 那么 reflog 本身只会保存 30 天历史, 所以这里手动清理应该没什么意义吧, 除非只是希望手动完成一下垃圾回收器完成的事情?
 
 
 
