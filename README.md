@@ -42,7 +42,7 @@ https://creativecommons.org/licenses/by/4.0/legalcode
 
 > * **repository** — A **repository** is a collection of _commits_, each of which is an archive of what the project's _working tree_ looked like at a past date, whether on your machine or someone else's. It also defines HEAD (see below), which identifies the branch or commit the current working tree stemmed from. Lastly, it contains a set of _branches_ and _tags_, to identify certain commits by name.
 
-* **repository** — **repository** 是由若干 _commit_ 组成的集合, 这些 _commit_ 可以存在你的机器上, 也可以在其他的地方, 它们是 *working tree* 曾经状态的存档. **repository** 同时定义了 HEAD (下面有), 它标志着当前的 working tree 的来源. **repository** 还含有一个由 _branch_ 和 _tag_ 组成的集合, _branch_ 和 _tags_ 可以看作是某个 commit 的别名, 用户可以通过这个别名来找到某个 commit. 
+* **repository** — **repository** 是由若干 _commit_ 组成的集合, 这些 _commit_ 可以存在你的机器上, 也可以在其他的地方, 它们是 *working tree* 曾经状态的存档. **repository** 同时定义了 HEAD (下面有), 它标志着当前的 working tree 的来源. **repository** 还含有一个由 _branch_ 和 _tag_ 组成的集合, _branch_ 和 _tag_ 可以看作是某个 commit 的别名, 用户可以通过这个别名来找到某个 commit. 
 
 
 
@@ -96,7 +96,7 @@ https://creativecommons.org/licenses/by/4.0/legalcode
 
 > * **tag** — A **tag** is also a name for a commit, similar to a _branch_, except that it always names the same commit, and can have its own description text.
 
-* **tag** — **tag** 是另一种 commit 的别名, 和 _branch_ 很类似, 除了它永远都是某个特定 commit f的别名, 以及一个 tag 可以有它自己的说明文字.
+* **tag** — **tag** 是另一种 commit 的别名, 和 _branch_ 很类似, 除了它永远都是某个特定 commit 的别名, 以及一个 tag 可以有它自己的说明文字.
 
 
 
@@ -164,7 +164,7 @@ Git 的 repository 的设计很多时候都和 UNIX 的文件系统很相似:
 
 >  A _filesystem_ begins with a root directory, which typically consists of other directories, most of which have leaf nodes, or _files_, that contain data. Meta-data about these files’ contents is stored both in the directory (the names), and in the i-nodes that reference the contents of those files (their size, type, permissions, etc). Each _i-node_ has a unique number that identifies the contents of its related file. And while you may have many directory entries pointing to a particular i-node (i.e., hard-links), it’s the i-node which “owns” the contents stored on your filesystem.
 
-文件系统是从根目录开始的,  通常它会包括其他的所有目录. 大部分的目录会含有叶子节点或者说是文件, 文件中才真正含有数据. 关于文件内容的元数据同时被存放在目录里, 以及引用这个文件的内容的那个 i-node 里. 在目录里只存了个文件名, 而在 i-node 中存放着文件的大小, 类型, 权限等等. 每个 i-node 有一个唯一的编码, 用于区分它关联的文件内容, 但是要注意: 是可能会出现多个文件目录指向了同一个 i-node 的情况的(比如说硬链接). 总的来说,是 i-node 最终管理着你存在文件系统里的数据文件. 
+_文件系统_ 是从根目录开始的,  通常它会包括其他的所有目录. 大部分的目录会含有叶子节点或者说是 _文件_ , 文件中才真正含有数据. 关于文件内容的元数据同时被存放在目录里, 以及引用这个文件的内容的那个 i-node 里. 在目录里只存了个文件名, 而在 i-node 中存放着文件的大小, 类型, 权限等等. 每个 i-node 有一个唯一的编码, 用于区分它关联的文件内容, 但是要注意: 是可能会出现多个文件目录指向了同一个 i-node 的情况的(比如说硬链接). 总的来说,是 i-node 最终管理着你存在文件系统里的数据文件. 
 
 
 
@@ -626,7 +626,7 @@ $ git checkout 5f1bc85
 
 > * **tagname** — A tag-name alias is identical to a branch alias in terms of naming a commit. The major difference between the two is that tag aliases never change, whereas branch aliases change each time a new commit is checked in to that branch.
 
-* **tagname** — 从给commit命名的角度来看, 一个 tag 几乎和一个 branch 是一模一样的. 主要的区别在于 branch 指代的 commit 是可能会变化的, 它会在新的 commit 提交到这个 branch 的时候被更新成新的那个, 而 tag 不会.
+* **tagname** — 从给 commit 命名的角度来看, 一个 tag 几乎和一个 branch 是一模一样的. 主要的区别在于 branch 指代的 commit 是可能会变化的, 它会在新的 commit 提交到这个 branch 的时候被更新成新的那个, 而 tag 不会.
 
 
 
@@ -725,7 +725,7 @@ $ git log --grep='foo' --author='johnw' --since="1 month ago" master..
 
 > One of Git’s most capable commands for manipulating commits is the innocently-named rebase command. Basically, every branch you work from has one or more “base commits”: the commits that branch was born from. Take the following typical scenario, for example. Note that the arrows point back in time because each commit references its parent(s), but not its children. Therefore, the D and Z commits represent the heads of their respective branches:
 
-Git 最好用的命令之一就是操作 commit 的 rebase 命令, 顾名思义, rebase 是用来更改 commit 的 base 的. 通常来说, 你的每个分支都会有一个或者是更多个的 "base commits": 指你的分支是从哪个 commit 开始创建的. 以下面这张图描述的这种典型情况为例, 我们可以注意到箭头是指向父 commit 的, 而不是指向子 commit, 因为实际上是子 commit 中含有对父 commit 的引用. 我们通常将 D 和 Z 视作它们所在分支的头:
+Git 最好用的命令之一就是操作 commit 的 rebase 命令, 顾名思义, rebase 是用来更改 commit 的 base 的. 通常来说, 你的每个分支都会有一个或者是更多个的 "base commits": 指你的分支是从哪个 commit 开始创建的. 以下面这张图描述的这种典型情况为例, 我们可以注意到箭头是指向父 commit 的, 而不是指向子 commit, 因为实际上是子 commit 中含有对父 commit 的引用. 我们通常将 D 和 Z 视作它们所在分支的 `HEAD`:
 
 
 
@@ -735,7 +735,7 @@ Git 最好用的命令之一就是操作 commit 的 rebase 命令, 顾名思义,
 
 > In this case, running branch would show two “heads”: `D` and `Z`, with the common parent of both branches being A. The output of show-branch shows us just this information:
 
-在如上图所示的这个情况中, 我们可以看到这些分支一共有两个 "头": `D` 和 `Z`, 它们的公共祖先是 `A`. `show-branch` 指令的输出结果向我们展示了这一点:
+在如上图所示的这个情况中, 我们可以看到这些分支一共有两个 "`HEAD`": `D` 和 `Z`, 它们的公共祖先是 `A`. `show-branch` 指令的输出结果向我们展示了这一点:
 
 
 
@@ -776,7 +776,7 @@ $ git show-branch
 * 我们目前在 repository 中拥有的两个分支是从 `A` 开始分支的.
 * 从下往上读,第一列字符 (一列 `+`) 告诉我们, 分支 `Z` 在分叉后拥有的 commit 依次是: `W`, `X`, `Y` 还有 `Z`.
 * 同样, 第二列字符 (一列 `*`) 告诉我们, 分支 `D` 在分叉后拥有的 commit 依次是: `B`, `C` 还有 `D`.
-* 在整个输出的最上面有一些被 `--` 分开的部分, 这里是在告诉我们分支的头是谁, 以及下面的一系列输出中, 开头的第几列是和这个分支对应的, 使用 `*` 标注的分支是当前 checkout 的, 其他的分支头使用 `!`, 而在接下来的部分中使用 `+`.
+* 在整个输出的最上面有一些被 `--` 分开的部分, 这里是在告诉我们分支的 `HEAD` 是谁, 以及下面的一系列输出中, 开头的第几列是和这个分支对应的, 使用 `*` 标注的分支是当前 checkout 的, 其他的分支 `HEAD` 使用 `!`, 而在接下来的部分中使用 `+`.
 
 
 
@@ -870,7 +870,7 @@ $ git rebase D # change Z’s base commit to point to D
 
 > When rebase was run above, it automatically rewrote all the commits from `W` to `Z` in order to rebase the `Z` branch onto the `D` commit (i.e., the head commit of the `D` branch). You can, however, take complete control over how this rewriting is done. If you supply the `-i` option to `rebase`, it will pop you into an editing buffer where you can choose what should be done for every commit in the local `Z` branch:
 
-就像上面说的那样, 当你运行一个 rebase 命令的时候, 它将为了将 `Z` 分支的 base 更改到分支 `D` 的头上, 而自动的重写从 `W` 到 `Z` 的所有 commit. 其实你是完全可以控制这个重写的过程的. 给 `rebase` 传递一个 `-i` 参数, 那么你将进入一个可编辑的缓冲区, 在这个界面里, 你可以选择到底应该对 `Z` 分支上的每个 commit 做些什么:
+就像上面说的那样, 当你运行一个 rebase 命令的时候, 它将为了将 `Z` 分支的 base 更改到分支 `D` 的 `HEAD` 上, 而自动的重写从 `W` 到 `Z` 的所有 commit. 其实你是完全可以控制这个重写的过程的. 给 `rebase` 传递一个 `-i` 参数, 那么你将进入一个可编辑的缓冲区, 在这个界面里, 你可以选择到底应该对 `Z` 分支上的每个 commit 做些什么:
 
 
 
@@ -910,7 +910,7 @@ $ git rebase D # change Z’s base commit to point to D
 * 重新调整 commit 的顺序.
 * 将不正确的更改删除.
 * 将你的分支的 base 移动到你的 repository 中的任何一个 commit 上.
-* 更改一个单独的 commit, 比如说在实际上这个 commit 已经被提交之后, 往里面添加更改.
+* 更改一个单独的 commit, 比如说在实际上这个 commit 已经被提交很久之后, 往里面添加更改.
 
 
 
@@ -924,11 +924,11 @@ $ git rebase D # change Z’s base commit to point to D
 
 
 
-如果你打算将分支 `L` 迁移到分支 `Z` 上, 并且使得 commit `L` 是分支 `Z` 的新头, 你会怎么做呢?
+如果你打算将分支 `L` 迁移到分支 `Z` 上, 并且使得 commit `L` 是分支 `Z` 的新 `HEAD`, 你会怎么做呢?
 
 > The picture reads: we have our main-line of development, `D`, which three commits ago was branched to begin speculative development on `Z`. At some point in the middle of all this, back when `C` and `X` were the heads of their respective branches, we decided to begin another speculation which finally produced `L`. Now we’ve found that `L`’s code is good, but not quite good enough to merge back over to the main-line, so we decide to move those changes over to the development branch `Z`, making it look as though we’d done them all on one branch after all. Oh, and while we’re at it, we want to edit `J` real quick to change the copyright date, since we forgot it was 2008 when we made the change! Here are the commands needed to untangle this knot:
 
-这个图实际上在说: 我们主要的开发发生在分支 `D` 上, 而这个分支 `D` 在三个 commit 之前, 分支出了一个 `Z` 来进行试探性质的开发. 在 `C` 和 `X` 还是分支的头的时候, 有人尝试合并了两个分支, 进行了新一轮的试探性开发, 最终产出了分支 `L`. 那么现在我们知道了 commit `L` 的代码是很优秀的, 但是还没有优秀到足以合并回主分支的程度, 我们为了进一步改进这个代码, 希望把 `L` 上的更改移动到分支 `Z` 上, 然后调整得足够好了以后, 再合并回主分支. 顺便, 我们在做这一切的同时, 还希望编辑一下 commit `J` 来简单的变更一下版权信息的日期, 因为当初提交 commit `J` 的时候忘了改它. 那么以下是解决以上这些麻烦的问题所需要的命令:
+这个图实际上在说: 我们主要的开发发生在分支 `D` 上, 而这个分支 `D` 在三个 commit 之前, 分支出了一个 `Z` 来进行试探性质的开发. 在 `C` 和 `X` 还是分支的 `HEAD` 的时候, 有人尝试合并了两个分支, 进行了新一轮的试探性开发, 最终产出了分支 `L`. 那么现在我们知道了 commit `L` 的代码是很优秀的, 但是还没有优秀到足以合并回主分支的程度, 我们为了进一步改进这个代码, 希望把 `L` 上的更改移动到分支 `Z` 上, 然后调整得足够好了以后, 再合并回主分支. 顺便, 我们在做这一切的同时, 还希望编辑一下 commit `J` 来简单的变更一下版权信息的日期, 因为当初提交 commit `J` 的时候忘了改它. 那么以下是解决以上这些麻烦的问题所需要的命令:
 
 
 
@@ -945,7 +945,7 @@ $ git rebase -i Z
 
 
 
-![Rebasing Multiple Branches Part 1](https://jwiegley.github.io/git-from-the-bottom-up/images/rebasing-branches-1.png)
+![Rebasing Multiple Branches Part 2](https://jwiegley.github.io/git-from-the-bottom-up/images/rebasing-branches-2.png)
 
 
 
@@ -969,7 +969,7 @@ $ git rebase -i Z
 
 > Between your data files, which are stored on the filesystem, and your Git blobs, which are stored in the repository, there stands a somewhat strange entity: the Git index. Part of what makes this beast hard to understand is that it’s got a rather unfortunate name. It’s an index in the sense that it refers to the set of newly created trees and blobs which you created by running add. These new objects will soon get bound into a new tree for the purpose of committing to your repository — but until then, they are only referenced by the index. That means that if you unregister a change from the index with reset, you’ll end up with an orphaned blob that will get deleted at some point at the future.
 
-在你的数据文件, 与 Git 中存储的 blob 之间还存在着一个奇怪的媒介, 我们称之为 the Git index. 这个令人困惑的名字使得它很难被人理解. 从某种意义上来讲, 它确实是一种索引: 它引用一个由新添加的 tree[^fn11] 和 blob 组成的集合, 这个集合是用户通过运行 add 命令创建的. 在这些对象真正被添加到一个 tree, 并且最终成为一个 commit 加入到你的 repository 中之前, 这些新的对象, 它们仅仅只被 the index 引用而已. 这意味着如果你通过 reset 命令将一个被记录到 the index 中的更改撤销掉的话, 那么你原本新创建的 blob 会成为没有人引用的孤儿, 这种 blob 在未来的某个时间点会被删除.
+在你存储在文件系统中的数据文件, 与 Git 中存储的 blob 之间还存在着一个奇怪的媒介, 我们称之为 the Git index. 这个令人困惑的名字使得它很难被人理解. 从某种意义上来讲, 它确实是一种索引: 它引用一个由新添加的 tree[^fn11] 和 blob 组成的集合, 这个集合是用户通过运行 add 命令创建的. 在这些对象真正被添加到一个 tree, 并且最终成为一个 commit 加入到你的 repository 中之前, 这些新的对象, 它们仅仅只被 the index 引用而已. 这意味着如果你通过 reset 命令将一个被记录到 the index 中的更改撤销掉的话, 那么你原本新创建的 blob 会成为没有人引用的孤儿, 这种 blob 在未来的某个时间点会被删除.
 
 [^fn11]: 译者注: 这里的 tree 指的是被新 commit 直接管理的那个 tree 的 sub-tree.
 
@@ -1144,7 +1144,7 @@ $ stg commit -a  # commit all the patches
 
 > This is definitely easier than creating temporary branches and using `cherry-pick` to apply specific commit ids, followed by deleting the temporary branch.
 
-这比上面提到的建立临时分支, 后面再把他删掉的方式舒服多了.
+这比上面提到的建立临时分支并使用 `cherry-pick` 来应用特别的 commit 哈希值, 后面再把他删掉的方式舒服多了.
 
 
 
@@ -1167,11 +1167,11 @@ $ stg commit -a  # commit all the patches
 
 > Basically, `reset` is a reference editor, an index editor, and a working tree editor. This is partly what makes it so confusing, because it’s capable of doing so many jobs. Let’s examine the difference between these three modes, and how they fit into the Git commit model.
 
-简单来说, `reset` 是一个能编辑 HEAD / index / working 的工具. 这可以部分解释它为什么看起来这么难懂, 因为它实际上确实一下子完成了很多很多工作. 我们会在下面慢慢解释上面提到的三种模式之间的区别, 以及它们在我们前文建立的, 从 commit 的角度理解 Git 的模型中, 到底是如何工作的.
+简单来说, `reset` 是一个能编辑 HEAD / index / working tree 的工具. 这可以部分解释它为什么看起来这么难懂, 因为它实际上确实一下子完成了很多很多工作. 我们会在下面慢慢解释上面提到的三种模式之间的区别, 以及它们在我们前文建立的, 从 commit 的角度理解 Git 的模型中, 到底是如何工作的.
 
 
 
-### 3.2 Doing a mixed reset | Mixed reset
+### 3.2 Doing a mixed reset | 应用一个 mixed reset
 
 
 
@@ -1189,7 +1189,7 @@ $ git add foo.c  # made a mistake, add it back
 
 
 
-### 3.3 Doing a soft reset | Soft reset
+### 3.3 Doing a soft reset | 应用一个 soft reset
 
 
 
@@ -1235,7 +1235,7 @@ $ git update-ref HEAD HEAD^  # does the same thing, albeit manually
 
 
 
-### 3.4 Doing a hard reset | Hard reset
+### 3.4 Doing a hard reset | 应用一个 hard reset
 
 
 
@@ -1503,7 +1503,7 @@ $ git-snapshot
 
 
 
-## 6 Further reading
+## 6 Further reading | 阅读更多
 
 
 
