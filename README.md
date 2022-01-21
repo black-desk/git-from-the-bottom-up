@@ -115,12 +115,11 @@ https://creativecommons.org/licenses/by/4.0/legalcode
 
 
 > * **HEAD** — **HEAD** is used by your repository to define what is currently checked out:
-    * If you checkout a branch, HEAD symbolically refers to that branch, indicating that the branch name should be updated after the next commit operation.
-    *  If you checkout a specific commit, HEAD refers to that commit only. This is referred to as a detached _HEAD_, and occurs, for example, if you check out a tag name.
+>   * If you checkout a branch, HEAD symbolically refers to that branch, indicating that the branch name should be updated after the next commit operation.
+>   *  If you checkout a specific commit, HEAD refers to that commit only. This is referred to as a detached _HEAD_, and occurs, for example, if you check out a tag name.
 
 * **HEAD** — **HEAD** 是被你的 repository 用来确定什么东西是当前 checkout 的:
   * 如果你 checkout 一个 branch, HEAD 就会指向那个 branch, 这意味着这个 branch 在下一次 commit 之后会更新.  
-  
   * 如果你 checkout 某个特定的 commit, 那么 HEAD 只会指向那个 commit. 发生这种事情的时候, 我们称一个 HEAD 处在脱离的状态. 当你 checkout 一个 tag 的时候也会发生这样的事情.
 
 
